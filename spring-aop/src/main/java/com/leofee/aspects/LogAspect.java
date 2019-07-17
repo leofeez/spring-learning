@@ -1,7 +1,10 @@
 package com.leofee.aspects;
 
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
+
+import java.util.Arrays;
 
 @Aspect
 public class LogAspect {
@@ -15,8 +18,12 @@ public class LogAspect {
      * 在目标方法执行前切入
      */
     @Before("pointCut()")
-    public void logStart() {
-        System.out.println("除法准备运行, 参数列表为：{}");
+    public void logStart(JoinPoint joinPoint) {
+
+        String methodName = joinPoint.getSignature().getName();
+
+        joinPoint.getSignature();
+        System.out.println("method: " + methodName + "准备运行, 参数列表为：{" + Arrays.asList(joinPoint.getArgs())+ "}");
     }
 
     @After("pointCut()")
@@ -24,14 +31,14 @@ public class LogAspect {
         System.out.println("除法结束。。。。。。");
     }
 
-    @AfterReturning("pointCut()")
-    public void logReturn() {
-        System.out.println("除法正常结束，返回值为：");
+    @AfterReturning(pointcut = "pointCut()", returning = "result")
+    public void logReturn(Object result) {
+        System.out.println("除法正常结束，返回值为：" + result);
     }
 
-    @AfterThrowing("pointCut()")
-    public void logException() {
-        System.out.println("除法计算异常，异常信息为：");
+    @AfterThrowing(pointcut = "pointCut()", throwing = "exception")
+    public void logException(Exception exception) {
+        System.out.println("除法计算异常，异常信息为：" + exception);
     }
 
     @Around("pointCut()")

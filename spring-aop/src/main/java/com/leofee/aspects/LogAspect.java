@@ -41,11 +41,18 @@ public class LogAspect {
         System.out.println("除法计算异常，异常信息为：" + exception);
     }
 
-    @Around("pointCut()")
+    /**
+     * 利用注解的方式切入
+     */
+    @Around("@annotation(com.leofee.annotation.LogPrint)")
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
-        System.out.println("环绕通知, 开始执行....");
+
+        String methodName = joinPoint.getSignature().getName();
+        Class declaringType = joinPoint.getSignature().getDeclaringType();
+
+        System.out.println(declaringType + "." + methodName + ", 开始执行....");
         Object result = joinPoint.proceed();
-        System.out.println("环绕通知, 开始结束....");
+        System.out.println(declaringType + "." + methodName + ", 执行结束....");
 
         return result;
     }

@@ -10,13 +10,17 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>spring-learning-annotation</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>configuration</module>
-    </modules>
-
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>

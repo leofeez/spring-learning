@@ -1,4 +1,7 @@
 package anno.componentscan.service;
 
-public interface HelloService {
+import org.springframework.stereotype.Service;
+
+@Service
+public class HelloService {
 }

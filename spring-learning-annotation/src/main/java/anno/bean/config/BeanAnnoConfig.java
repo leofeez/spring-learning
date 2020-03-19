@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class BeanConfig {
+public class BeanAnnoConfig {
 
     /**
      * 如果不定义返回的Bean的名称，则默认为方法名

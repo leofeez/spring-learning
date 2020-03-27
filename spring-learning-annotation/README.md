@@ -1,14 +1,16 @@
 # Spring 注解使用与解析
 
-## 1. `@Configuration`
+## 1. @Configuration
 在容器启动时告诉容器加了该注解的类是一个配置类，和我们利用`xml`的方式是同样的效果
 
-## 2. `@Bean` 
-作用在方法上，表示该方法生成的 Bean 交由 Spring 容器管理，`@Bean`注解可以指定返回的bean的名称是什么
-如果不指定，则Bean的名称默认为方法的名称
+## 2. @Bean
+作用在方法上，表示该方法生成的 Bean 交由 Spring 容器管理，常用属性如下
+- `name`：指定该 Bean 在Spring 容器中的名称，如果不指定，则Bean的名称默认为方法的名称
+- `initMethod`: 指定该 Bean在实例化时的初始化方法
+- `destroyMethod`：指定该 Bean 在容器关闭时的销毁该 Bean 的方法
 
-## 3. `@ComponentScan`
-指定容器的扫描规则，该注解包含以下几个常用属性：
+## 3. @ComponentScan
+指定容器的扫描规则，常用属性如下：
 - `value`和`basePackages`: 指定扫描包的路径
 - `useDefaultFilters`: 是否使用默认的扫描规则（如 `@Component, @Controller @Service `等）
 - `includeFilters`: 指定自定义的扫描规则，如下，如果设置`useDefaultFilters = false`，
@@ -46,6 +48,7 @@ public class MyTypeFilter implements TypeFilter {
      * @param metadataReaderFactory 可以获取到其他任何类信息
      * @return true / false
      */
+    @Override
     public boolean match(MetadataReader metadataReader,
                          MetadataReaderFactory metadataReaderFactory) throws IOException {
         // 获取当前类的注解

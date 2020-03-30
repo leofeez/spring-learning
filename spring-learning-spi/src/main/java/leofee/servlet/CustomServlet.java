@@ -13,7 +13,7 @@ import java.io.IOException;
  * @date 2019/9/27
  */
 @WebServlet(urlPatterns = "/leofee/*")
-public class LeeServlet extends HttpServlet {
+public class CustomServlet extends HttpServlet {
 
     /**
      * 重写父类的 {@code doGet} 方法

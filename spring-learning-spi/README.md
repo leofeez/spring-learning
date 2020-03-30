@@ -30,18 +30,21 @@ SPI 的机制能够很好的实现组件的可插拔性，让规范与实现相�
 - `spring-web` 中的 `SpringServletContainerInitializer`。  
 在以往的 web 项目中，我们第一步就需要配置 web.xml ，配置 `servlet` ， `filter`， `listener`，但是在 servlet 3.0 中提供了新的更便捷的方式：
    
-   - 基于注解 `@WebServlet` , `@WebFilter`, `@WebListener`：此处不作详细说明，见自定义 servlet `LeeServlet`。
+   - 基于注解 `@WebServlet` , `@WebFilter`, `@WebListener`
    - 基于 `java spi` 规范。
      
    在 spring-web 项目中的 `DispatcherServlet` 就是通过 SPI 机制向 spring 容器中注册 servlet 组件。  
    打开 spring-web 的 jar 包我们可以看到 `META-INF\services`
    目录下有一个文件为 `javax.servlet.ServletContainerInitializer` 内容为 `org.springframework.web.SpringServletContainerInitializer`，
-   这个类就是 servlet 初始化的一个实现类，  
+   该类的作用就是基于 servlet 3.0 提供的`@HandlerTypes`注解，在容器启动时，会自动扫描所有`WebApplicationInitializer`的实现类并完成实例化。
    
    流程如下:
    
    1 `@HandlerTypes(WebApplicationInitializer.class)` 注解:  
-   该注解指定接口之后，tomcat 在启动的时候就会去查找`WebApplicationInitializer`接口的所有实现类 class 并放到 `onStartup` 方法参数的 set 集合中。
+   该注解指定接口之后，tomcat 在启动的时候就会去查找`WebApplicationInitializer`接口的所有实现类 class 并放到 
+   `ServletContainerInitializer#onStartup(Set, ServletContext)` 方法参数的 set 集合中。
+   由于`WebApplicationInitializer` 已经有了一个抽象的实现类`AbstractAnnotationConfigDispatcherServletInitializer`，所以我们就只需要
+   继承该抽象类即可。
    
    2 执行 `... onStartup(Set<Class<?>> webAppInitializerClasses, ServletContext servletContext)`：  
    
@@ -82,44 +85,16 @@ SPI 的机制能够很好的实现组件的可插拔性，让规范与实现相�
 
    ```
    
-   3 执行 `SpringBootServletInitializer#onStartup(ServletContext servletContext)`:
+   3 执行 `AbstractDispatcherServletInitializer#onStartup(ServletContext servletContext)` 注册servlet组件:
    ```
-   
-    @Override
-    public void onStartup(ServletContext servletContext) throws ServletException {
-        ......
-        
-        // 这是重点方法
-        WebApplicationContext rootAppContext = createRootApplicationContext(servletContext);
-        
-        ......
-    }
-    
+        @Override
+    	public void onStartup(ServletContext servletContext) throws ServletException {
+    		super.onStartup(servletContext);
+            // 注册 dispatcher servlet 组件
+    		registerDispatcherServlet(servletContext);
+    	}
    ```
-   
-   接下来看一下 `createRootApplicationContext(servletContext)` 到底做了些什么，源码如下：
-   
-   ```
-    protected WebApplicationContext createRootApplicationContext(ServletContext servletContext) {
-    
-        // 1. 创建 SpringApplication 的 builder
-        SpringApplicationBuilder builder = createSpringApplicationBuilder();
-        
-        ...
-        // 2. build SpringApplication
-        SpringApplication application = builder.build();
-        
-        ...
-        // 3. 执行 SpringApplication.run()
-        return run(application);
-    }
-    
- ```
-    
-  我们可以看到熟悉的 run 方法，在这方法中会看到：
-  - 创建 Spring 容器 `ConfigurableApplicationContext`
-  - Spring 容器的刷新，最终会调用大名鼎鼎的 `refresh()` 方法
-  - 监听器的启动
+至此，`DispatcherServlet` 就通过 SPI 的机制注册到容器中。
 
 
 

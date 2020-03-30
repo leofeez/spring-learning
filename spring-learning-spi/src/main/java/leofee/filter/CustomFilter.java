@@ -15,7 +15,7 @@ import java.io.IOException;
  * @date 2019/9/27
  */
 @WebFilter(urlPatterns = "/leofee/*")
-public class LeeFilter implements Filter {
+public class CustomFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {

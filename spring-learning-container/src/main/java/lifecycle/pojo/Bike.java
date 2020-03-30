@@ -11,9 +11,11 @@ public class Bike implements InitializingBean, DisposableBean {
         System.out.println("Bike 开始实例化.......");
     }
 
+    @Override
     public void destroy() throws Exception {
         System.out.println("Bike destroyed.......");    }
 
+    @Override
     public void afterPropertiesSet() throws Exception {
         System.out.println("Bike afterPropertiesSet.......");
     }

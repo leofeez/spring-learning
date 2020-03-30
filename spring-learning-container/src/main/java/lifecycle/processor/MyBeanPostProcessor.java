@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MyBeanPostProcessor implements BeanPostProcessor {
 
+    @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 
         // 在bean初始化之前进行前置处理
@@ -15,6 +16,7 @@ public class MyBeanPostProcessor implements BeanPostProcessor {
         return bean;
     }
 
+    @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 
         // 在bean初始化之后进行前置处理

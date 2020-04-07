@@ -5,7 +5,7 @@ import anno.Import.pojo.Dog;
 import anno.Import.register.MyBeanDefinitionRegistrar;
 import anno.Import.selector.MyImportSelector;
 import anno.componentscan.Person;
-import anno.conditional.ConditionConfig;
+import anno.ConditionConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;

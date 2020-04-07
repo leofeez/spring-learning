@@ -65,4 +65,43 @@ public class MyTypeFilter implements TypeFilter {
     }
 }
 ```
+## 4. @Conditional
+作用在配置类的方法上，用于限定@Bean的实例化，只有满足对应的条件，该方法才会实例化Bean并交由Spring管理。
+- 自定义 condition
+```
+/**
+ * 实现{@link org.springframework.context.annotation.Condition}
+ */
+public class LinuxCondition implements Condition {
+    /**
+     * 根据该方法返回值用于确定是否执行Bean 的实例化
+     * 
+     * @param context 应用上下文的信息
+     * @param metadata 注解的信息
+     * @return true 则实例化Bean，否则 false
+     */
+    public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+        // 判读当前系统是不是 linux
+        String osName = context.getEnvironment().getProperty("os.name");
+        return osName != null && osName.contains("Linux");
+    }
+}
+```
+- 配置 `@Conditional`
+```
+@Configuration
+public class ConditionConfig {
 
+    /**
+     * 当前系统为linux才会实例化
+     */
+    @Conditional(value = {LinuxCondition.class})
+    @Bean("linux")
+    public Environment getLinux() {
+        System.out.println("开始创建 linux ......");
+        Environment linux = new Environment();
+        linux.setName("linux");
+        return linux;
+    }
+}
+```

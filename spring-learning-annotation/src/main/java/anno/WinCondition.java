@@ -1,4 +1,4 @@
-package anno.conditional;
+package anno;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.Condition;

@@ -105,3 +105,6 @@ public class ConditionConfig {
     }
 }
 ```
+## 5. @Import
+该注解是表示可以引入一个或多个配置类，类似于之前 xml 方式配置中的 `<import resource=""/>`，引入的配置类包括
+`@Configuration`的配置类， 实现了`ImportSelector`或者`ImportBeanDefinitionRegistrar`接口的实现类。

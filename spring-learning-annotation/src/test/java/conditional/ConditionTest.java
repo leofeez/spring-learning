@@ -1,6 +1,6 @@
 package conditional;
 
-import anno.ConditionConfig;
+import anno.conditional.ConditionConfig;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

@@ -1,4 +1,5 @@
-# Spring 容器
+# Spring Bean的生命周期
 
-## 1. `@Configuration`
+## 1. `FactoryBean`
+
 

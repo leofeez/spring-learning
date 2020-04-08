@@ -18,6 +18,7 @@
     <properties>
         <org.springframework.version>5.1.8.RELEASE</org.springframework.version>
         <org.projectlombok.version>1.18.8</org.projectlombok.version>
+        <com.alibaba.fastjson>1.2.68</com.alibaba.fastjson>
     </properties>
 
     <dependencyManagement>
@@ -39,9 +40,27 @@
             </dependency>
 
             <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-jdbc</artifactId>
+                <version>${org.springframework.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-aspects</artifactId>
+                <version>${org.springframework.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>${org.projectlombok.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${com.alibaba.fastjson}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

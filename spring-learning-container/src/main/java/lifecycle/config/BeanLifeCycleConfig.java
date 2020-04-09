@@ -19,7 +19,6 @@ import java.math.BigDecimal;
 @Configuration
 @ComponentScan(basePackageClasses = {Bike.class, MyBeanPostProcessor.class, TransportationAware.class, MyApplicationContextAware.class},
         basePackages = {"lifecycle.api.*", "lifecycle.listener.*"})
-@Import(value = {MyFactoryBean.class})
 public class BeanLifeCycleConfig {
 
     @Bean(name = "benz", initMethod = "init", destroyMethod = "destroy")

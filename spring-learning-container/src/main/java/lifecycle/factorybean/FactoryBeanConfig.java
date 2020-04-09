@@ -9,6 +9,4 @@ import org.springframework.context.annotation.Import;
 @Configuration
 @Import(value = {MyFactoryBean.class, MySmartFactoryBean.class})
 public class FactoryBeanConfig {
-
-
 }

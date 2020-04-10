@@ -12,9 +12,28 @@
 源码解析见：[(手把手玩转Spring 之 FactoryBean)](https://blog.csdn.net/Ecilipse/article/details/105408920)
 
 ## 2. `InitializingBean`
-在Spring容器创建Bean的时候，我们可以通过三种方式去给Bean实例化之后做一些初始化的操作：
-1. `@Bean(initMethod="init")`
-2. 实现`InitializingBean`接口
-```
+在Spring容器创建Bean的时候，我们可以通过自定义的方式去给Bean实例化之后做一些初始化的操作：
+1. 利用`@Bean(initMethod="init")`中指定 initMethod。
+2. 实现`InitializingBean`接口。
 
 ```
+@Configuration
+public class InitializingBeanConfig {
+    /**
+     * 实现了 InitializingBean
+     */
+    @Bean(name = "myInitializingBean")
+    public MyInitializingBean getMyInitializingBean() {
+        return new MyInitializingBean();
+    }
+    /**
+     * 自定义 initMethod 方法
+     */
+    @Bean(name = "myCustomInitializingBean", initMethod = "init", destroyMethod = "destroy")
+    public MyCustomInitializingBean getMyCustomInitializingBean() {
+        return new MyCustomInitializingBean();
+    }
+}
+```
+
+## 3. `BeanPostProcessor`

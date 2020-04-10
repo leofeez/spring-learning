@@ -37,3 +37,5 @@ public class InitializingBeanConfig {
 ```
 
 ## 3. `BeanPostProcessor`
+
+## 4. `ApplicationContextAware`

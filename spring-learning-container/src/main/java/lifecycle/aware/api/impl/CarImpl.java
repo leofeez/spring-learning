@@ -1,6 +1,6 @@
-package lifecycle.api.impl;
+package lifecycle.aware.api.impl;
 
-import lifecycle.api.Transportation;
+import lifecycle.aware.api.TransportationApi;
 import lifecycle.constants.TransportationType;
 import org.springframework.stereotype.Component;
 
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
  * @author leofee
  */
 @Component
-public class CarImpl implements Transportation {
+public class CarImpl implements TransportationApi {
 
     @Override
     public void run() {

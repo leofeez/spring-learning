@@ -1,11 +1,11 @@
-package lifecycle.api;
+package lifecycle.aware.api;
 
 import lifecycle.constants.TransportationType;
 
 /**
  * @author leofee
  */
-public interface Transportation {
+public interface TransportationApi {
 
     /**
      * 启动

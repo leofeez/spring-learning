@@ -17,19 +17,16 @@ public class MyApplicationContextAware implements ApplicationContextAware {
         System.out.println("set my applicationContext !");
         this.applicationContext = applicationContext;
 
-        // 利用Spring 容器 自定义其他操作
-        getMyOsName();
+        // 自定义其他操作
+        doSomethingMore();
     }
 
     /**
      * 只要持有了 {@link ApplicationContext} 我们就可以做一些其他的操作
-     *
-     * @return 操作系统名称
      */
-    public String getMyOsName() {
+    protected void doSomethingMore() {
         Environment environment = this.applicationContext.getEnvironment();
         String osName = environment.getProperty("os.name");
         System.out.println("当前操作系统为: " + osName);
-        return osName;
     }
 }

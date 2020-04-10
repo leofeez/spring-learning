@@ -36,6 +36,57 @@ public class InitializingBeanConfig {
 }
 ```
 
-## 3. `BeanPostProcessor`
+## 3. `ApplicationContextAware`
+`ApplicationContextAware` 是Spring容器定义的一个接口，通常情况下我们所有的Bean的生命周期都是交给Spring容器去管理，如实例化，初始化，销毁等。
+而`ApplicationContextAware`的作用就是提供给我们在容器启动时能实现自定义的扩展功能。
+如：我们一个接口如果有多个实现的情况下，如何在运行时能够自动获取到对应的实现类，并完成我们的业务逻辑。
+如果我们只是仅仅采用`if-else`的方式，最大的缺点就是扩展性太差，违背了可扩展的原则，每增加一个实现类，我们就需要去修改`if-else`中的判断，当业务
+越来越庞大，我们就需要一直去修改这段逻辑，所以我们可以通过实现该接口，自己将这些实现类管理起来，然后在运行时自动去获取到对应的实现类，就可以很好的实现扩展。
 
-## 4. `ApplicationContextAware`
+根据官方文档介绍，：
+- 实现该接口之后，在容器启动时，BeanFactory 就是自动通知我们实现类去完成一系列操作。
+- 实现该接口之后，我们可以在容器启动时，能够很便利的去获取到我们需要的Bean，当然，如果是为了设置类似于依赖Bean的话，Spring是不推荐实现该接口的，
+应该交给Spring去帮助我们加载依赖的Bean，如通过`@Autowired`的方式。
+- Spring 还给我们提供了一个该接口的抽象实现类，其实我们可以直接继承该抽象实现类`ApplicationObjectSupport`，完成我们的想要的功能。
+
+例如自定义我们的`ApplicationContextAware`:
+
+```
+/**
+ * @author leofee
+ */
+public class MyApplicationContextAware implements ApplicationContextAware {
+
+    private ApplicationContext applicationContext;
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        System.out.println("set my applicationContext !");
+        this.applicationContext = applicationContext;
+
+        // 自定义其他操作
+        doSomethingMore();
+    }
+
+    /**
+     * 只要持有了 {@link ApplicationContext} 我们就可以做一些其他的操作
+     */
+    protected void doSomethingMore() {
+        Environment environment = this.applicationContext.getEnvironment();
+        String osName = environment.getProperty("os.name");
+        System.out.println("当前操作系统为: " + osName);
+    }
+}
+```
+配置类：
+```
+@Import(value = {MyApplicationContextAware.class})
+@Configuration
+public class ApplicationContextAwareConfig {
+}
+```
+
+在容器启动时就会执行`setApplicationContext`，然后执行`doSomethingMore`完成我们想扩展的功能。
+
+## 4. `BeanPostProcessor`
+

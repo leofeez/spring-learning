@@ -8,22 +8,22 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 @Getter
-public enum TransportationType {
+public enum PayType {
 
     /**
-     * 汽车
+     * 支付宝
      */
-    CAR("1"),
+    ALI_PAY("1"),
 
     /**
-     * 自行车
+     * 微信
      */
-    BIKE("2"),
+    WE_CHAT("2"),
 
     /**
-     * 火车
+     * 信用卡
      */
-    TRAIN("3"),;
+    CREDIT_CARD("3"),;
 
     private String value;
 }

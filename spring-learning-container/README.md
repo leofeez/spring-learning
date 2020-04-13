@@ -76,6 +76,7 @@ public class MyApplicationContextAware implements ApplicationContextAware {
 ```
 
 在容器启动时就会执行`setApplicationContext`，然后执行`doSomethingMore`完成我们想扩展的功能。
+
 源码解析见：[(手把手玩转Spring 之 ApplicationContextAware)](https://blog.csdn.net/Ecilipse/article/details/105437086)
 
 ## 4. `BeanPostProcessor`

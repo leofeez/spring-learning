@@ -11,8 +11,9 @@
     <modules>
         <module>spring-learning-annotation</module>
         <module>spring-learning-aop</module>
-        <module>spring-learning-container</module>
+        <module>spring-learning-ioc</module>
         <module>spring-learning-spi</module>
+        <module>spring-learning-mvc</module>
     </modules>
 
     <properties>

@@ -40,7 +40,7 @@ public class InitializingBeanConfig {
 `ApplicationContextAware` 是Spring容器提供用于初始化Bean的一个入口，通常情况下我们所有的Bean的生命周期都是交给Spring容器去管理，
 如实例化，初始化，销毁等。
 
-根据官方文档介绍，：
+根据官方文档介绍：
 - 实现该接口之后，在容器启动时，BeanFactory 就是自动通知我们实现类去完成一系列操作。
 - 实现该接口之后，我们可以在容器启动时，能够很便利的通过当前的`ApplicationContext`去获取到我们需要的Bean，Spring建议，如果是为了
 设置类似于依赖Bean的话，Spring是不推荐实现该接口的，应该交给Spring去帮助我们加载依赖的Bean，如通过`@Autowired`的方式。

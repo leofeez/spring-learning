@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Import;
  * @author leofee
  */
 @Import(value = {MyApplicationContextAware.class, PaymentAware.class})
-@ComponentScan(basePackages = { "lifecycle.aware.api", "lifecycle.aware.service"})
+@ComponentScan(basePackages = { "lifecycle.aware.api"})
 @Configuration
 public class ApplicationContextAwareConfig {
 }

@@ -1,4 +1,4 @@
-package com.leofee.transaction.config;
+package com.leofee.config;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;

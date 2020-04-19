@@ -1,12 +1,12 @@
 package com.leofee.config;
 
 import com.leofee.aspects.LogAspect;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import com.leofee.service.CalculatorService;
+import com.leofee.service.OrderService;
+import org.springframework.context.annotation.*;
 
-@ComponentScan(basePackages = "com.leofee.service")
+@ComponentScan(basePackageClasses = {CalculatorService.class},
+        excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = OrderService.class)})
 @EnableAspectJAutoProxy
 @Configuration
 public class AopConfig {

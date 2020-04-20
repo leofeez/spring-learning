@@ -1,12 +1,12 @@
-package anno.lazy.config;
+package anno.lazy;
 
-import anno.lazy.pojo.User;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import pojo.User;
 
 @Configuration
-public class UserConfig {
+public class LazyConfig {
 
     @Lazy
     @Bean("lazyUser")

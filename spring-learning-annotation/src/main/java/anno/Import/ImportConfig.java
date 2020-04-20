@@ -1,4 +1,4 @@
-package anno.Import.config;
+package anno.Import;
 
 import anno.Import.register.MyBeanDefinitionRegistrar;
 import anno.Import.selector.MyImportSelector;

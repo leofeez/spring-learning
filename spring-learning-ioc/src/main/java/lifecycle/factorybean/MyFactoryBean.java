@@ -1,6 +1,6 @@
 package lifecycle.factorybean;
 
-import lifecycle.pojo.Train;
+import pojo.Train;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.SmartFactoryBean;
 

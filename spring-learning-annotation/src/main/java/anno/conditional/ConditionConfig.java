@@ -1,6 +1,6 @@
 package anno.conditional;
 
-import anno.componentscan.Environment;
+import pojo.Environment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;

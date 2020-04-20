@@ -1,6 +1,6 @@
 package Import;
 
-import anno.Import.config.ImportConfig;
+import anno.Import.ImportConfig;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

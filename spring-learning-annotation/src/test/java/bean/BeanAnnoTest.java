@@ -1,10 +1,10 @@
 package bean;
 
-import anno.bean.config.BeanAnnoConfig;
-import anno.bean.pojo.Person;
+import anno.bean.BeanAnnoConfig;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import pojo.Person;
 
 import java.util.Arrays;
 

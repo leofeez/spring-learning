@@ -1,6 +1,6 @@
 package lifecycle.factorybean;
 
-import lifecycle.pojo.Ship;
+import pojo.Ship;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.SmartFactoryBean;
 

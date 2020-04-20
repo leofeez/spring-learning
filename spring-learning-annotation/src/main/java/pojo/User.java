@@ -1,4 +1,4 @@
-package anno.scope.pojo;
+package pojo;
 
 import lombok.Data;
 

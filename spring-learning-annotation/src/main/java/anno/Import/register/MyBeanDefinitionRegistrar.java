@@ -1,7 +1,7 @@
 package anno.Import.register;
 
-import anno.Import.pojo.Mouse;
-import anno.Import.pojo.Tiger;
+import pojo.Mouse;
+import pojo.Tiger;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;

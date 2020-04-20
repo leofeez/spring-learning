@@ -1,13 +1,13 @@
-package anno.scope.config;
+package anno.scope;
 
-import anno.scope.pojo.User;
+import pojo.User;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
 @Configuration
-public class UserConfig {
+public class ScopeConfig {
 
     @Bean("user")
     public User getUser() {

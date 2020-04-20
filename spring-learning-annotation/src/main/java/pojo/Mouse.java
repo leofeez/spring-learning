@@ -1,4 +1,4 @@
-package anno.Import.pojo;
+package pojo;
 
 /**
  * @author leofee

@@ -1,4 +1,4 @@
-package lifecycle.pojo;
+package pojo;
 
 public class Train {
 

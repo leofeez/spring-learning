@@ -1,4 +1,4 @@
-package anno.autowired.pojo;
+package pojo;
 
 import org.springframework.stereotype.Component;
 

@@ -1,8 +1,8 @@
-package anno.bean.config;
+package anno.bean;
 
-import anno.bean.pojo.Person;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import pojo.Person;
 
 @Configuration
 public class BeanAnnoConfig {
@@ -16,7 +16,7 @@ public class BeanAnnoConfig {
     @Bean
     public Person getPerson() {
         Person person = new Person();
-        person.setAge("28");
+        person.setAge(28);
         person.setName("Jack");
         return person;
     }

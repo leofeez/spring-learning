@@ -1,4 +1,4 @@
-package anno.componentscan;
+package pojo;
 
 import lombok.Data;
 

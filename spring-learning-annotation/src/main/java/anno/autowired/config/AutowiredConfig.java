@@ -1,6 +1,6 @@
 package anno.autowired.config;
 
-import anno.autowired.dao.MyDao;
+import anno.autowired.dao.StudentDao;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -10,10 +10,13 @@ import org.springframework.context.annotation.Configuration;
 public class AutowiredConfig {
 
     @Bean
-    public MyDao getMyDao() {
-        MyDao myDao = new MyDao();
-        myDao.setFlag(2);
-        return myDao;
+    public StudentDao getMyDao() {
+        System.out.println("---------start----------");
+        System.out.println("通过 @Bean 方式生成" + StudentDao.class.getName() + "实例");
+        StudentDao studentDao = new StudentDao();
+        studentDao.setFlag(2);
+        System.out.println("--------- end ----------");
+        return studentDao;
     }
 
 }

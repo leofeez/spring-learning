@@ -28,10 +28,6 @@ SPI 的机制能够很好的实现组件的可插拔性，让规范与实现相�
 就是以 `com.java.sql.Driver` 为名称的文件，文件内容就是对应的 mysql 数据库驱动的实现类 `com.mysql.cj.jdbc.Driver`。
 
 - `spring-web` 中的 `SpringServletContainerInitializer`。  
-在以往的 web 项目中，我们第一步就需要配置 web.xml ，配置 `servlet` ， `filter`， `listener`，但是在 servlet 3.0 中提供了新的更便捷的方式：
-   
-   - 基于注解 `@WebServlet` , `@WebFilter`, `@WebListener`
-   - 基于 `java spi` 规范。
      
    在 spring-web 项目中的 `DispatcherServlet` 就是通过 SPI 机制向 spring 容器中注册 servlet 组件。  
    打开 spring-web 的 jar 包我们可以看到 `META-INF\services`

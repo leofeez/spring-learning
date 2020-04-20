@@ -1,4 +1,4 @@
-package leofee.filter;
+package filter;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;

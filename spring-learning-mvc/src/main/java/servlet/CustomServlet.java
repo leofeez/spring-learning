@@ -1,4 +1,4 @@
-package leofee.servlet;
+package servlet;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -10,7 +10,6 @@ import java.io.IOException;
  * 自定义的 servlet
  *
  * @author leofee
- * @date 2019/9/27
  */
 @WebServlet(urlPatterns = "/leofee/*")
 public class CustomServlet extends HttpServlet {
@@ -24,6 +23,6 @@ public class CustomServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        resp.getWriter().write("hello leofee! this is my servlet!");
+        resp.getWriter().write("hello! this is my servlet!");
     }
 }

@@ -1,14 +1,18 @@
 package servlet;
 
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
+ * 通过 {@link WebServlet @WebServlet} 自定义的 servlet 组件
+ *
  * @author leofee
  */
-public class CustomServlet extends HttpServlet {
+@WebServlet(urlPatterns = "/hello/*")
+public class HelloServlet extends HttpServlet {
 
     /**
      * 重写父类的 {@code doGet} 方法
@@ -19,6 +23,6 @@ public class CustomServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        resp.getWriter().write("hello! this is my SPI servlet!");
+        resp.getWriter().write("hello! this is my servlet!");
     }
 }

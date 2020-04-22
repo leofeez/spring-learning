@@ -63,6 +63,13 @@
                 <artifactId>fastjson</artifactId>
                 <version>${com.alibaba.fastjson}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-test</artifactId>
+                <version>${org.springframework.version}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

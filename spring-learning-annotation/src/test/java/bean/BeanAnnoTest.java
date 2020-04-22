@@ -1,26 +1,25 @@
 package bean;
 
 import anno.bean.BeanAnnoConfig;
+import base.BaseTest;
 import org.junit.Test;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
 import pojo.Person;
 
 import java.util.Arrays;
 
-public class BeanAnnoTest {
+@ContextConfiguration(classes = BeanAnnoConfig.class)
+public class BeanAnnoTest extends BaseTest {
 
     @Test
     public void testBeanAnno() {
-        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(BeanAnnoConfig.class);
         String[] beanNames = applicationContext.getBeanNamesForType(Person.class);
         System.out.println(Arrays.toString(beanNames));
     }
 
     @Test
     public void testBeanAnno2() {
-        ApplicationContext application = new AnnotationConfigApplicationContext(BeanAnnoConfig.class);
-        Person leofee = (Person) application.getBean("leofee");
+        Person leofee = (Person) applicationContext.getBean("leofee");
         System.out.println(leofee);
     }
 }

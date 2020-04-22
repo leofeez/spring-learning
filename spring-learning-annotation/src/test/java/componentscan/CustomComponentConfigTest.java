@@ -1,18 +1,20 @@
 package componentscan;
 
 import anno.componentscan.config.CustomComponentConfig;
+import base.BaseTest;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Arrays;
 
-public class CustomComponentConfigTest {
+@ContextConfiguration(classes = CustomComponentConfig.class)
+public class CustomComponentConfigTest extends BaseTest {
 
     @Test
     public void testCustomComponent() {
-        ApplicationContext app = new AnnotationConfigApplicationContext(CustomComponentConfig.class);
-        Arrays.stream(app.getBeanDefinitionNames()).forEach(System.out::println);
+        Arrays.stream(applicationContext.getBeanDefinitionNames()).forEach(System.out::println);
     }
 
 }

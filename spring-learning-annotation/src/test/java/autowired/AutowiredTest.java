@@ -3,21 +3,20 @@ package autowired;
 import anno.autowired.config.AutowiredConfig;
 import anno.autowired.dao.StudentDao;
 import anno.autowired.service.PersonService;
+import base.BaseTest;
 import org.junit.Test;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Map;
 
 /**
  * @author leofee
  */
-public class AutowiredTest {
+@ContextConfiguration(classes = AutowiredConfig.class)
+public class AutowiredTest extends BaseTest {
 
     @Test
     public void testAutowired() {
-        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(AutowiredConfig.class);
-
         Map<String, StudentDao> daoMap = applicationContext.getBeansOfType(StudentDao.class);
 
         System.out.println("---------start----------");

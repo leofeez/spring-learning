@@ -28,7 +28,7 @@
     
 - 通过 **Java-SPI** 的方式注册servlet组件：
 
-    由于 `Java-SPI` 的本质是面向接口编程，这里的接口指的就是`javax.servlet.ServletContainerInitializer`。
+    由于 `Java-SPI` 的本质是面向接口编程，这里的接口指的就是`javax.servlet.ServletContainerInitializer`。具体实现如下：
 
     1. 在项目路径下`resources`里新建一个`META-INF/services`的文件夹。
     2. 创建`ServletContainerInitializer`接口的实现类，并加上`@HandlesTypes`注解，
@@ -81,3 +81,71 @@
     至此，自定义的 servlet 组件就注册完成，通过对应的访问规则就可以访问到注册的 servlet。
     
 ### DispatcherServlet
+通过上述 SPI 的方式注册servlet，可以知道基于注解配置的SpringMVC中的 `DispatcherServlet` 就是通过 SPI 实现动态注册。
+
+流程如下:
+   
+   1. `@HandlerTypes(WebApplicationInitializer.class)` 注解:  
+   该注解指定接口之后，tomcat 在启动的时候就会去查找`WebApplicationInitializer`接口的所有实现类 class 并放到 
+   `ServletContainerInitializer#onStartup(Set, ServletContext)` 方法参数的 set 集合中。
+   
+   2. 执行 `... onStartup(Set<Class<?>> webAppInitializerClasses, ServletContext servletContext)`：  
+   
+      ```
+       
+        @Override
+    	 public void onStartup(@Nullable Set<Class<?>> webAppInitializerClasses, ServletContext servletContext)
+    			throws ServletException {
+
+    		List<WebApplicationInitializer> initializers = new LinkedList<>();
+
+    		if (webAppInitializerClasses != null) {
+    		    // 遍历并实例化实现类
+    		    for (Class<?> waiClass : webAppInitializerClasses) {
+    		    
+    		    // 过滤掉 接口，抽象类，然后必须实现 WebApplicationInitializer
+    		    if (!waiClass.isInterface() && !Modifier.isAbstract(waiClass.getModifiers()) && 
+    		                            WebApplicationInitializer.class.isAssignableFrom(waiClass)) {
+                   try {
+                       // 反射生成实现类
+                       initializers.add((WebApplicationInitializer)
+                               ReflectionUtils.accessibleConstructor(waiClass).newInstance());
+                       }
+                       catch (Throwable ex) {
+                           throw new ServletException("Failed to instantiate WebApplicationInitializer class", ex);
+                       }
+                   }
+               }
+           }
+           ......
+           // 遍历执行 WebApplicationInitializer 的 onStartup 方法，
+           // 如 SpringBootServletInitializer#onStartup...
+           for (WebApplicationInitializer initializer : initializers) {
+               initializer.onStartup(servletContext);
+           }
+    	}
+
+      ```
+   
+   3. 执行 `AbstractDispatcherServletInitializer#onStartup(ServletContext servletContext)` 注册servlet组件:
+       ```
+            @Override
+        	public void onStartup(ServletContext servletContext) throws ServletException {
+        		super.onStartup(servletContext);
+                // 注册 dispatcher servlet 组件
+        		registerDispatcherServlet(servletContext);
+        	}
+       ```
+至此，`DispatcherServlet` 就通过 SPI 的机制动态的注册完成。
+
+后续使用`DispatcherServlet` 时，需要引入其他的配置，如拦截Mapping，可以直接继承`AbstractAnnotationConfigDispatcherServletInitializer`。
+
+一共有三个必须实现的抽象方法：
+
+- `protected Class<?>[] getRootConfigClasses();`: 该方法用于设置`RootApplicationContext`的配置类，
+可以理解为包含`@Service`，`@Respository`，数据源等相关配置。
+
+- `protected Class<?>[] getServletConfigClasses();`: 该方法用于设置`ServletApplicationContext`的配置类，
+可以理解为包含`@Controller`，`ViewResolver`等相关配置。
+
+- `protected String[] getServletMappings();`: 该方法用于设置`DispatcherServlet`拦截的url。

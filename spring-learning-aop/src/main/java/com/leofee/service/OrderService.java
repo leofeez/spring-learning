@@ -13,7 +13,6 @@ public class OrderService {
 
     @LogPrint
     public void createOrder() {
-
         orderDao.insert();
     }
 }

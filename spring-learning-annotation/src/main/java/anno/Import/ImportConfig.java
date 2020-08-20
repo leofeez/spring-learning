@@ -1,6 +1,5 @@
 package anno.Import;
 
-import anno.Import.register.MyBeanDefinitionRegistrar;
 import anno.Import.selector.MyImportSelector;
 import org.springframework.context.annotation.*;
 
@@ -10,8 +9,9 @@ import org.springframework.context.annotation.*;
  * {@link ImportBeanDefinitionRegistrar} : 支持手动添加组件到容器中，所有bean的注册可以使用BeanDefinition
  * @author leofee
  */
+@EnableMyAnnotation
 @EnableAspectJAutoProxy
-@Import({MyImportSelector.class, MyBeanDefinitionRegistrar.class})
+@Import({MyImportSelector.class})
 @Configuration
 public class ImportConfig {
 }

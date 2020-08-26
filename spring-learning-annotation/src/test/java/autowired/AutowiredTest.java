@@ -4,6 +4,7 @@ import anno.autowired.config.AutowiredConfig;
 import anno.autowired.dao.StudentDao;
 import anno.autowired.service.PersonService;
 import base.BaseTest;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -28,7 +29,8 @@ public class AutowiredTest extends BaseTest {
 
         Map<String, PersonService> beans = applicationContext.getBeansOfType(PersonService.class);
         PersonService personService = beans.entrySet().iterator().next().getValue();
-        personService.getStudent();
-        personService.getTeacher();
+        Assert.assertNotNull(personService.getStudentDao());
+        Assert.assertNotNull(personService.getTeacherDao());
+        Assert.assertNotNull(personService.getWorkerDao());
     }
 }

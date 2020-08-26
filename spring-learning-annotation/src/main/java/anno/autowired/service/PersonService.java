@@ -2,6 +2,8 @@ package anno.autowired.service;
 
 import anno.autowired.dao.StudentDao;
 import anno.autowired.dao.TeacherDao;
+import anno.autowired.dao.WorkerDao;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Component;
 /**
  * @author leofee
  */
+@Data
 @Component
 public class PersonService {
 
@@ -16,24 +19,25 @@ public class PersonService {
 
     private TeacherDao teacherDao;
 
+    /**
+     * 属性注入
+     */
     @Autowired
-    public PersonService(StudentDao studentDao, @Nullable TeacherDao teacherDao) {
-        System.out.println("两个参数的构造器");
+    private WorkerDao workerDao;
+
+    /**
+     * 构造器注入
+     */
+    @Autowired
+    public PersonService(StudentDao studentDao) {
         this.studentDao = studentDao;
+    }
+
+    /**
+     * setter 方法注入
+     */
+    @Autowired
+    public void setTeacherDao(TeacherDao teacherDao) {
         this.teacherDao = teacherDao;
-    }
-
-//    @Autowired(required = false)
-//    public PersonService(TeacherDao teacherDao) {
-//        System.out.println("一个参数的构造器");
-//        this.teacherDao = teacherDao;
-//    }
-
-    public void getStudent() {
-        System.out.println(PersonService.class.getName() + "中注入的" + StudentDao.class.getName() + "为:" + studentDao);
-    }
-
-    public void getTeacher() {
-        System.out.println(PersonService.class.getName() + "中注入的" + TeacherDao.class.getName() + "为:" + teacherDao);
     }
 }

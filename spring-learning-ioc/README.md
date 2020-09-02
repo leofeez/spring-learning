@@ -1,4 +1,4 @@
-# Spring 容器
+# Spring Bean 生命周期
 
 ## 1. `FactoryBean`
 - FactoryBean，就是单个对象的工厂类，和普通的Bean不一样，该工厂类所持有的对象引用应该是`getObject()`方法实际创建并返回的Bean而不是它本身。
@@ -80,5 +80,8 @@ public class MyApplicationContextAware implements ApplicationContextAware {
 源码解析见：[(手把手玩转Spring 之 ApplicationContextAware)](https://blog.csdn.net/Ecilipse/article/details/105437086)
 
 ## 4. `BeanPostProcessor`
+Spring Bean 创建的拦截器
 
+## 5. `BeanFactoryPostProcessor`
+Spring Bean Factory 拦截器
 

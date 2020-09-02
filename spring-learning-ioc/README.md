@@ -70,7 +70,7 @@ public class MyApplicationContextAware implements ApplicationContextAware {
     protected void doSomethingMore() {
         Environment environment = this.applicationContext.getEnvironment();
         String osName = environment.getProperty("os.name");
-        System.out.println("当前操作系统为: " + osName);
+        System.out.println("当前操作系统为:" + osName);
     }
 }
 ```
@@ -80,4 +80,5 @@ public class MyApplicationContextAware implements ApplicationContextAware {
 源码解析见：[(手把手玩转Spring 之 ApplicationContextAware)](https://blog.csdn.net/Ecilipse/article/details/105437086)
 
 ## 4. `BeanPostProcessor`
+
 

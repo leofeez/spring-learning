@@ -2,14 +2,15 @@ package lifecycle.aware;
 
 
 import org.junit.Test;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+@ContextConfiguration(classes = ApplicationContextAwareConfig.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 public class ApplicationContextAwareTest {
 
     @Test
     public void testApplicationContextAware() {
-        // 容器启动
-        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(ApplicationContextAwareConfig.class);
     }
 }

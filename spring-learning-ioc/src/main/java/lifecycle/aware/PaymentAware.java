@@ -29,10 +29,10 @@ public class PaymentAware implements ApplicationContextAware {
         this.applicationContext = applicationContext;
 
         // 准备 PaymentApi 的所有实现类
-        prepareTransportation();
+        preparePaymentTypes();
     }
 
-    private void prepareTransportation() {
+    private void preparePaymentTypes() {
         // 获取容器中所有支付方式的实现类
         Map<String, PaymentApi> paymentApiList = this.applicationContext.getBeansOfType(PaymentApi.class);
 
@@ -41,7 +41,7 @@ public class PaymentAware implements ApplicationContextAware {
         });
     }
 
-     public static PaymentApi getTransportation(PayType type) {
+     public static PaymentApi getPayment(PayType type) {
         return PAYMENT_MAP.get(type);
      }
 }

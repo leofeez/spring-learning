@@ -1,6 +1,5 @@
 package com.leofee.service;
 
-import com.leofee.annotation.LogPrint;
 import com.leofee.dao.OrderDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,10 +7,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class OrderService {
 
-    @Autowired
-    private OrderDao orderDao;
+    private final OrderDao orderDao;
 
-    @LogPrint
+    @Autowired
+    public OrderService(OrderDao orderDao) {
+        this.orderDao = orderDao;
+    }
+
     public void createOrder() {
         orderDao.insert();
     }

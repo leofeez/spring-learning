@@ -1,11 +1,13 @@
 package com.leofee.aspects;
 
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 
 import java.util.Arrays;
 
+@Slf4j
 @Aspect
 public class LogAspect {
 
@@ -23,22 +25,30 @@ public class LogAspect {
         String methodName = joinPoint.getSignature().getName();
 
         joinPoint.getSignature();
-        System.out.println("method: " + methodName + "准备运行, 参数列表为：{" + Arrays.asList(joinPoint.getArgs())+ "}");
+        if (log.isDebugEnabled()) {
+            log.debug("method: " + methodName + "准备运行, 参数列表为：{" + Arrays.asList(joinPoint.getArgs())+ "}");
+        }
     }
 
     @After("pointCut()")
-    public void logEnd() {
-        System.out.println("除法结束。。。。。。");
+    public void logEnd(JoinPoint joinPoint) {
+        if (log.isDebugEnabled()) {
+            log.debug("method: {} 执行结束", joinPoint.getSignature().getName());
+        }
     }
 
     @AfterReturning(pointcut = "pointCut()", returning = "result")
-    public void logReturn(Object result) {
-        System.out.println("除法正常结束，返回值为：" + result);
+    public void logReturn(JoinPoint joinPoint, Object result) {
+        if (log.isDebugEnabled()) {
+            log.debug("method: {} 执行结束, 返回值为：{}", joinPoint.getSignature().getName(), result);
+        }
     }
 
     @AfterThrowing(pointcut = "pointCut()", throwing = "exception")
-    public void logException(Exception exception) {
-        System.out.println("除法计算异常，异常信息为：" + exception);
+    public void logException(JoinPoint joinPoint, Exception exception) {
+        if (log.isDebugEnabled()) {
+            log.debug("method: {} 执行异常, 异常信息为：{}", joinPoint.getSignature().getName(), exception);
+        }
     }
 
     /**
@@ -48,7 +58,7 @@ public class LogAspect {
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
 
         String methodName = joinPoint.getSignature().getName();
-        Class declaringType = joinPoint.getSignature().getDeclaringType();
+        Class<?> declaringType = joinPoint.getSignature().getDeclaringType();
 
         System.out.println(declaringType + "." + methodName + ", 开始执行....");
         Object result = joinPoint.proceed();

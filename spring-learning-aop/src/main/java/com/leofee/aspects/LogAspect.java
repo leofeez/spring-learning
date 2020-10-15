@@ -60,9 +60,11 @@ public class LogAspect {
         String methodName = joinPoint.getSignature().getName();
         Class<?> declaringType = joinPoint.getSignature().getDeclaringType();
 
-        System.out.println(declaringType + "." + methodName + ", 开始执行....");
+        joinPoint.getArgs();
+
+        System.out.println(declaringType + "." + methodName + ", 开始执行....,参数列表为：" + Arrays.toString(joinPoint.getArgs()));
         Object result = joinPoint.proceed();
-        System.out.println(declaringType + "." + methodName + ", 执行结束....");
+        System.out.println(declaringType + "." + methodName + ", 执行结束....,返回值为：" + result);
 
         return result;
     }

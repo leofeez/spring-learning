@@ -15,6 +15,7 @@
         <module>spring-learning-spi</module>
         <module>spring-learning-mvc</module>
         <module>spring-learning-mini-ioc</module>
+        <module>spring-learning-transaction</module>
     </modules>
 
     <properties>
@@ -22,6 +23,7 @@
         <org.projectlombok.version>1.18.8</org.projectlombok.version>
         <com.alibaba.fastjson>1.2.68</com.alibaba.fastjson>
         <org.apache.logging.log4j>2.11.0</org.apache.logging.log4j>
+        <mysql.connector.version>8.0.21</mysql.connector.version>
     </properties>
 
     <dependencyManagement>
@@ -77,6 +79,18 @@
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-slf4j-impl</artifactId>
                 <version>${org.apache.logging.log4j}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql.connector.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.mchange</groupId>
+                <artifactId>c3p0</artifactId>
+                <version>0.9.5.2</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

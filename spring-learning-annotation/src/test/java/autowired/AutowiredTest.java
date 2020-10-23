@@ -6,6 +6,7 @@ import anno.autowired.service.PersonService;
 import base.BaseTest;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Map;

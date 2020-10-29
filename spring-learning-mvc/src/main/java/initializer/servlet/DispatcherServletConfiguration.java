@@ -1,5 +1,7 @@
 package initializer.servlet;
 
+import configuration.MyRootConfiguration;
+import configuration.MyWebConfiguration;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
@@ -15,7 +17,7 @@ public class DispatcherServletConfiguration extends AbstractAnnotationConfigDisp
      */
     @Override
     protected Class<?>[] getRootConfigClasses() {
-        return new Class[0];
+        return new Class[]{MyRootConfiguration.class};
     }
 
     /**
@@ -25,7 +27,7 @@ public class DispatcherServletConfiguration extends AbstractAnnotationConfigDisp
      */
     @Override
     protected Class<?>[] getServletConfigClasses() {
-        return new Class[0];
+        return new Class[]{MyWebConfiguration.class};
     }
 
     /**
@@ -35,6 +37,6 @@ public class DispatcherServletConfiguration extends AbstractAnnotationConfigDisp
      */
     @Override
     protected String[] getServletMappings() {
-        return new String[]{"/"};
+        return new String[]{"/*"};
     }
 }

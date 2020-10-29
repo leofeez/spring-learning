@@ -1,17 +1,17 @@
 package com.leofee.definition;
 
-public abstract class BeanDefinition {
+public abstract class MyBeanDefinition {
 
     protected Class<?> beanClass;
 
     protected String beanName;
 
-    public BeanDefinition(Class<?> beanClass, String beanName) {
+    public MyBeanDefinition(Class<?> beanClass, String beanName) {
         this.beanClass = beanClass;
         this.beanName = beanName;
     }
 
-    public BeanDefinition(Class<?> beanClass) {
+    public MyBeanDefinition(Class<?> beanClass) {
         this.beanName = beanClass.getName();
         this.beanClass = beanClass;
     }

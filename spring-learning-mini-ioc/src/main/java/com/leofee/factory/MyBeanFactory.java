@@ -2,7 +2,7 @@ package com.leofee.factory;
 
 import java.util.function.Supplier;
 
-public interface BeanFactory {
+public interface MyBeanFactory {
 
     Object getBean(String beanName);
 

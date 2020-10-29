@@ -1,12 +1,12 @@
 package com.leofee.factory;
 
-import com.leofee.registry.BeanRegistry;
+import com.leofee.registry.MyBeanRegistry;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
-public class ConfigurableBeanFactory implements BeanFactory, BeanRegistry {
+public class MyConfigurableBeanFactory implements MyBeanFactory, MyBeanRegistry {
 
     private static final Map<String, Object> beanMap = new ConcurrentHashMap<>(256);
 

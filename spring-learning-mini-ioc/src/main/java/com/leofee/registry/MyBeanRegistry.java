@@ -1,6 +1,6 @@
 package com.leofee.registry;
 
-public interface BeanRegistry {
+public interface MyBeanRegistry {
 
     /**
      * 根据class 注册到容器

@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({ElementType.FIELD, ElementType.CONSTRUCTOR, ElementType.METHOD})
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Autowired {
+@Target(value = ElementType.FIELD)
+@Retention(value = RetentionPolicy.RUNTIME)
+public @interface MyQualifier {
 }

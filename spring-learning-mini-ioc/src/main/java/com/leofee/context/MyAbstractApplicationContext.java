@@ -1,20 +1,20 @@
 package com.leofee.context;
 
-import com.leofee.factory.BeanFactory;
-import com.leofee.factory.ConfigurableBeanFactory;
+import com.leofee.factory.MyBeanFactory;
+import com.leofee.factory.MyConfigurableBeanFactory;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.function.Supplier;
 
-public abstract class AbstractApplicationContext implements ApplicationContext {
+public abstract class MyAbstractApplicationContext implements MyApplicationContext {
 
-    protected ConfigurableBeanFactory beanFactory;
+    protected MyConfigurableBeanFactory beanFactory;
 
     private Boolean isActive = false;
 
-    public AbstractApplicationContext() {
-        this.beanFactory = new ConfigurableBeanFactory();
+    public MyAbstractApplicationContext() {
+        this.beanFactory = new MyConfigurableBeanFactory();
     }
 
     @Override
@@ -49,7 +49,7 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
     }
 
     @Override
-    public BeanFactory getBeanFactory() {
+    public MyBeanFactory getBeanFactory() {
         return this.beanFactory;
     }
 

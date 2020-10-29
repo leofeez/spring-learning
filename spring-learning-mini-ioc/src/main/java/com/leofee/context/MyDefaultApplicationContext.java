@@ -5,9 +5,9 @@ package com.leofee.context;
  *
  * @author leofee
  */
-public class DefaultApplicationContext extends AbstractApplicationContext {
+public class MyDefaultApplicationContext extends MyAbstractApplicationContext {
 
-    public DefaultApplicationContext() {
+    public MyDefaultApplicationContext() {
         super();
         refresh();
     }

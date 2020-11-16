@@ -25,4 +25,9 @@ public class OrderService {
     public boolean updateOrder(Integer orderId) {
         return orderDao.updateOrder(orderId);
     }
+
+    @Transactional(rollbackFor = Exception.class)
+    public boolean updateOrderWithLock(Integer orderId) {
+        return orderDao.updateOrderWithCASLock(orderId);
+    }
 }

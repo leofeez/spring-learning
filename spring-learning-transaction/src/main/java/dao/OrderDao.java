@@ -40,8 +40,30 @@ public class OrderDao {
         return update > 0;
     }
 
+    /**
+     * 根据 CAS 即乐观锁更新
+     *
+     * @param orderId
+     * @return
+     */
+    public boolean updateOrderWithCASLock(Integer orderId) {
+        Order order = getOrderWithXLock(orderId);
+        Integer oldVersion = order.getVersion();
+        Integer newVersion = oldVersion + 1;
+        String sql = "update `order` set `version` = ? where `order_id` = ?;";
+        int update = jdbcTemplate.update(sql, newVersion, orderId);
+        System.out.println("update = " + update);
+        return update > 0;
+    }
+
     public Order getOrder(Integer orderId) {
        String sql = "select * from `order` where `order_id` = ?;";
+        BeanPropertyRowMapper<Order> rowMapper = BeanPropertyRowMapper.newInstance(Order.class);
+        return jdbcTemplate.queryForObject(sql, rowMapper, orderId);
+    }
+
+    public Order getOrderWithXLock(Integer orderId) {
+        String sql = "select * from `order` where `order_id` = ? for update;";
         BeanPropertyRowMapper<Order> rowMapper = BeanPropertyRowMapper.newInstance(Order.class);
         return jdbcTemplate.queryForObject(sql, rowMapper, orderId);
     }

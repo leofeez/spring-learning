@@ -23,4 +23,9 @@ public class OrderServiceTest {
     public void updateOrder() {
         orderService.updateOrder(1);
     }
+
+    @Test
+    public void updateOrderWithLock() {
+        orderService.updateOrderWithLock(1);
+    }
 }

@@ -10,7 +10,10 @@ public class OrderService {
     private final OrderDao orderDao;
 
     @Autowired
-    public OrderService(OrderDao orderDao) {
+    private CalculatorService calculatorService;
+
+
+    public OrderService(@Autowired(required = false)OrderDao orderDao) {
         this.orderDao = orderDao;
     }
 

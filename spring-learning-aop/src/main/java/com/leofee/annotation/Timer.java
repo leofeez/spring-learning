@@ -5,8 +5,8 @@ import java.lang.annotation.*;
 /**
  * @author leofee
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
 @Documented
-public @interface LogPrint {
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Timer {
 }

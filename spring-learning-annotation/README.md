@@ -24,6 +24,8 @@
 - `useDefaultFilters`: 是否使用默认的扫描规则（如 `@Component, @Controller @Service `等）
 - `includeFilters`: 指定自定义的扫描规则，如下，如果设置`useDefaultFilters = false`，
 则默认的`@Component`注解的类不会被装载到容器内，而自定义的 includeFilters 指定的类以及指定注解的类则会被装载到容器内
+- `lazyInit` : 是否延迟加载所扫描的Bean
+- `basePackageClasses`：指定的class所在的包下所有的class都会被扫描
 
 ```java
 @ComponentScan(basePackages = "anno.componentscan.controller",

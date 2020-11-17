@@ -13,8 +13,8 @@ public class CalculatorServiceTest {
 
         CalculatorService calculatorService = applicationContext.getBean(CalculatorService.class);
 
-        calculatorService.div(1, 1);
-
+//        calculatorService.div(1, 1);
+//
         calculatorService.add(1, 2);
     }
 }

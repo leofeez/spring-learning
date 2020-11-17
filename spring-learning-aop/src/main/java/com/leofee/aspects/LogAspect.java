@@ -62,9 +62,9 @@ public class LogAspect {
 
         joinPoint.getArgs();
 
-        System.out.println(declaringType + "." + methodName + ", 开始执行....,参数列表为：" + Arrays.toString(joinPoint.getArgs()));
+        log.info(declaringType + "." + methodName + ", logAround开始执行....,参数列表为：" + Arrays.toString(joinPoint.getArgs()));
         Object result = joinPoint.proceed();
-        System.out.println(declaringType + "." + methodName + ", 执行结束....,返回值为：" + result);
+        log.info(declaringType + "." + methodName + ", logAround执行结束....,返回值为：" + result);
 
         return result;
     }

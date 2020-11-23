@@ -19,7 +19,9 @@ public class AutowiredStaticInitializingSingleton implements SmartInitializingSi
      */
     @Override
     public void afterSingletonsInstantiated() {
-        beanFactory.autowireBean(new ServiceUtils());
+        if (beanFactory != null) {
+            beanFactory.autowireBean(new ServiceUtils());
+        }
     }
 
     /**

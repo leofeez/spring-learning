@@ -10,4 +10,9 @@ public class PostProcessorTest {
     public void testPostProcessor() {
         ApplicationContext applicationContext = new AnnotationConfigApplicationContext(PostProcessorConfig.class);
     }
+
+    @Test
+    public void addBeanPostProcessor() {
+        ApplicationContext applicationContext = new MyApplicationContext(PostProcessorConfig.class);
+    }
 }

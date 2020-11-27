@@ -17,6 +17,9 @@ public class MyEarlyBeanPostProcessor implements BeanPostProcessor {
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        return null;
+        // 在bean初始化之后进行前置处理
+        // 在 init method 调用之后调用
+        System.out.println("postProcessAfterInitialization bean = [" + bean + "], beanName = [" + beanName + "]");
+        return bean;
     }
 }

@@ -8,6 +8,7 @@ import com.leofee.proxy.jdk.MyJdkProxyApiImpl;
 import org.junit.Test;
 import org.springframework.cglib.proxy.Enhancer;
 
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 
 /**
@@ -18,11 +19,14 @@ public class ProxyTest {
     @Test
     public void testJdkProxy() {
         MyJdkProxyApi target = new MyJdkProxyApiImpl();
+        InvocationHandler handler = new MyProxyInvocationHandler(target);
         MyJdkProxyApi proxyInstance = (MyJdkProxyApi) Proxy.newProxyInstance(target.getClass().getClassLoader(),
                 target.getClass().getInterfaces(),
-                new MyProxyInvocationHandler(target));
+                handler);
 
         proxyInstance.hello();
+
+        MyProxyInvocationHandler.getInstance(target).hello();
     }
 
     @Test

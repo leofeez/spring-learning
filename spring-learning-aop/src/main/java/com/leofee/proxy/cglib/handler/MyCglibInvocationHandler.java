@@ -14,13 +14,13 @@ public class MyCglibInvocationHandler implements MethodInterceptor {
 
     @Override
     public Object intercept(Object o, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
-        if (log.isDebugEnabled()) {
-            log.debug("代理方式开始执行......");
+        if (log.isInfoEnabled()) {
+            log.info("Cglib 代理方式开始执行......");
         }
         Object result = methodProxy.invokeSuper(o, args);
 
-        if (log.isDebugEnabled()) {
-            log.debug("代理方法执行结束......");
+        if (log.isInfoEnabled()) {
+            log.info("Cglib 代理方法执行结束......");
         }
         return result;
     }

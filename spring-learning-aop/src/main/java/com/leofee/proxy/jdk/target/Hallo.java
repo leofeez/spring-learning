@@ -1,9 +1,9 @@
-package com.leofee.proxy.jdk;
+package com.leofee.proxy.jdk.target;
 
 /**
  * @author leofee
  */
-public interface MyJdkProxyApi {
+public interface Hallo {
 
     /**
      * 测试方法

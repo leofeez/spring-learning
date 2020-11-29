@@ -3,13 +3,11 @@ package com.leofee.service;
 import com.leofee.proxy.cglib.MyCglibProxy;
 import com.leofee.proxy.cglib.handler.MyCglibInvocationHandler;
 import com.leofee.proxy.jdk.handler.MyProxyInvocationHandler;
-import com.leofee.proxy.jdk.MyJdkProxyApi;
-import com.leofee.proxy.jdk.MyJdkProxyApiImpl;
+import com.leofee.proxy.jdk.handler.StaticProxyHandler;
+import com.leofee.proxy.jdk.target.Hallo;
+import com.leofee.proxy.jdk.target.HalloImpl;
 import org.junit.Test;
 import org.springframework.cglib.proxy.Enhancer;
-
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
 
 /**
  * @author leofee
@@ -17,16 +15,23 @@ import java.lang.reflect.Proxy;
 public class ProxyTest {
 
     @Test
-    public void testJdkProxy() {
-        MyJdkProxyApi target = new MyJdkProxyApiImpl();
-        InvocationHandler handler = new MyProxyInvocationHandler(target);
-        MyJdkProxyApi proxyInstance = (MyJdkProxyApi) Proxy.newProxyInstance(target.getClass().getClassLoader(),
-                target.getClass().getInterfaces(),
-                handler);
+    public void testStaticJdkProxy() {
+        // 目标类实例
+        Hallo target = new HalloImpl();
+        // 获取代理类对象
+        StaticProxyHandler handler = new StaticProxyHandler(target);
+        // 通过代理对象调用目标方法即可实现增强
+        handler.hello();
+    }
 
+    @Test
+    public void testJdkDynamicProxy() {
+        // 目标类实例
+        Hallo target = new HalloImpl();
+        // 获取代理类对象
+        Hallo proxyInstance = (Hallo)MyProxyInvocationHandler.getInstance(target);
+        // 通过代理对象调用目标方法即可实现增强
         proxyInstance.hello();
-
-        MyProxyInvocationHandler.getInstance(target).hello();
     }
 
     @Test

@@ -2,6 +2,8 @@ package bean;
 
 import anno.bean.BeanAnnoConfig;
 import base.BaseTest;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import pojo.Person;
@@ -19,7 +21,7 @@ public class BeanAnnoTest extends BaseTest {
 
     @Test
     public void testBeanAnno2() {
-        Person leofee = (Person) applicationContext.getBean("leofee");
-        System.out.println(leofee);
+        Person leofee = (Person) applicationContext.getBean("jack");
+        System.out.println(ToStringBuilder.reflectionToString(leofee, ToStringStyle.JSON_STYLE));
     }
 }

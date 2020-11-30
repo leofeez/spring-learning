@@ -20,4 +20,12 @@ public class BeanAnnoConfig {
         person.setName("Jack");
         return person;
     }
+
+    @Bean(name = "jack")
+    public Person person() {
+        Person person = new Person();
+        person.setAge(28);
+        person.setName("Jack");
+        return person;
+    }
 }

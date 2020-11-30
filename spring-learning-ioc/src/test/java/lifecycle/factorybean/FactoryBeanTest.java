@@ -1,5 +1,6 @@
 package lifecycle.factorybean;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -19,7 +20,7 @@ public class FactoryBeanTest {
         Arrays.stream(applicationContext.getBeanDefinitionNames()).forEach(System.out::println);
 
         Object targetBean = applicationContext.getBean("lifecycle.factorybean.MyFactoryBean");
-        System.out.println("FactoryBean 产生的Bean实例为:" + targetBean.getClass());
+        System.out.println("FactoryBean 产生的Bean实例为:" + ToStringBuilder.reflectionToString(targetBean));
 
         Object factoryBeanSelf = applicationContext.getBean(BeanFactory.FACTORY_BEAN_PREFIX + "lifecycle.factorybean.MyFactoryBean");
         System.out.println("FactoryBean 本身实例为：" + factoryBeanSelf.getClass());

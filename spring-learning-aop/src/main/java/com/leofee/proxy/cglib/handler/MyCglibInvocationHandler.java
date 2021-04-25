@@ -5,6 +5,7 @@ import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
 
 import java.lang.reflect.Method;
+import java.time.LocalDateTime;
 
 /**
  * @author leofee
@@ -14,14 +15,11 @@ public class MyCglibInvocationHandler implements MethodInterceptor {
 
     @Override
     public Object intercept(Object o, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
-        if (log.isInfoEnabled()) {
-            log.info("Cglib 代理方式开始执行......");
-        }
+        System.out.println("cglib dynamic proxy before say hello! time now is: " + LocalDateTime.now());
+
         Object result = methodProxy.invokeSuper(o, args);
 
-        if (log.isInfoEnabled()) {
-            log.info("Cglib 代理方法执行结束......");
-        }
+        System.out.println("cglib dynamic proxy after  say hello! time now is: " + LocalDateTime.now());
         return result;
     }
 }

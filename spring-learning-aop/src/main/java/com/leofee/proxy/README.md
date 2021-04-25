@@ -58,12 +58,12 @@ public class StaticProxyHandler implements Hallo {
      */
     @Override
     public void hello() {
-        System.out.println("static jdk proxy before say hello! time now is " + LocalDateTime.now());
+        System.out.println("static proxy before say hello! time now is: " + LocalDateTime.now());
 
         // 调用目标方法
         target.hello();
 
-        System.out.println("static jdk proxy after say hello!" + LocalDateTime.now());
+        System.out.println("static proxy after  say hello! time now is: " + LocalDateTime.now());
     }
 }
 
@@ -98,7 +98,7 @@ JDK的动态代理需要满足一定的规则：
 
 - 代理类的处理器实现 `InvocationHandler`接口，并实现 `public Object invoke(Object proxy, Method method, Object[] args)`方法。
 - 代理类的处理器须持有目标接口的实例。
-- 通过 `Proxy.newProxyInstance`创建代理类实例。
+- 通过 `Proxy.newProxyInstance`创建代理类实例，需要传入目标类的ClassLoader，一组interfaces和invocationHandler。
 
 `InvocationHandler` 实例如下：
 
@@ -114,9 +114,12 @@ public class MyProxyInvocationHandler implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        log.info("JDK 动态代理方法执行开始......proxy: {} , method: {}", proxy.getClass(), method.getName());
+        System.out.println("static jdk dynamic proxy before say hello! time now is: " + LocalDateTime.now());
+
+        // 调用目标方法
         Object result = method.invoke(target, args);
-        log.info("JDK 动态代理方法执行结束......");
+
+        System.out.println("static jdk dynamic proxy after  say hello! time now is: " + LocalDateTime.now());
         return result;
     }
 
@@ -150,5 +153,63 @@ public class MyProxyInvocationHandler implements InvocationHandler {
 
 从JDK的动态代理中可以发现，Proxy代理对象并没有亲自去做一些代理的动作，而是交由`InvocationHandler` 实例去实现代理行为。
 
+JDK动态代理要求使用动态代理的对象必须实现一个或多个接口。
+
 ## Cglib 动态代理
+
+> CGLIB是一个强大的高性能的代码生成包。底层通过使用一个小而快的字节码生成框架ASM来转换字节码动态的生成类。
+>
+> 由于动态生成的类是继承于目标类，并重写目标方法来实现，所以Cglib不能代理final修饰的目标方法。
+>
+> 在Spring AOP中就同时用到了 JDK 动态代理和 Cglib动态代理，默认是JDK动态代理，实际情况具体用哪一种取决于目标Bean是否实现了接口。
+
+Cglib动态代理和JDK动态代理的区别：
+
+- JDK是基于接口进行代理，所以目标类必须实现接口，而Cglib是基于类，以继承的方法实现。
+- JDK底层是利用InvocationHandler引入增强的逻辑，利用Proxy根据目标类的ClassLoader，目标类实现的接口，以及handler动态生成代理类。而Cglib底层利用ASM框架动态生成对应的子类字节码。
+
+目标类，没有实现接口：
+
+```java
+public class Hallo {
+
+    public void hello() {
+        System.out.println("hello cglib proxy!");
+    }
+}
+```
+
+Cglib需要实现 `MethodInterceptor`：
+
+```java
+public class MyCglibInvocationHandler implements MethodInterceptor {
+
+    @Override
+    public Object intercept(Object o, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
+        System.out.println("cglib dynamic proxy before say hello! time now is: " + LocalDateTime.now());
+
+        Object result = methodProxy.invokeSuper(o, args);
+
+        System.out.println("cglib dynamic proxy after  say hello! time now is: " + LocalDateTime.now());
+        return result;
+    }
+}
+```
+
+调用代理类：
+
+```java
+		@Test
+    public void testCglibProxy() {
+        Enhancer enhancer = new Enhancer();
+        // 设置代理类的父类
+        enhancer.setSuperclass(Hallo.class);
+        // 设置方法的回调
+        enhancer.setCallback(new MyCglibInvocationHandler());
+        // 创建代理对象
+        Hallo proxyInstance = (Hallo) enhancer.create();
+        // 执行代理方法
+        proxyInstance.hello();
+    }
+```
 

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.time.LocalDateTime;
 
 /**
  * 基于JDK动态代理
@@ -29,9 +30,12 @@ public class MyProxyInvocationHandler implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        log.info("JDK 动态代理方法执行开始......proxy: {} , method: {}", proxy.getClass(), method.getName());
+        System.out.println("jdk dynamic proxy before say hello! time now is: " + LocalDateTime.now());
+
+        // 调用目标方法
         Object result = method.invoke(target, args);
-        log.info("JDK 动态代理方法执行结束......");
+
+        System.out.println("jdk dynamic proxy after  say hello! time now is: " + LocalDateTime.now());
         return result;
     }
 

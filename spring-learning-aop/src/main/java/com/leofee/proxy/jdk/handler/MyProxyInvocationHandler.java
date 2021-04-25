@@ -29,17 +29,19 @@ public class MyProxyInvocationHandler implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        if (log.isInfoEnabled()) {
-            log.info("JDK 动态代理方法执行开始......proxy: {} , method: {}", proxy.getClass(), method.getName());
-        }
+        log.info("JDK 动态代理方法执行开始......proxy: {} , method: {}", proxy.getClass(), method.getName());
         Object result = method.invoke(target, args);
-        if (log.isInfoEnabled()) {
-            log.info("JDK 动态代理方法执行结束......");
-        }
+        log.info("JDK 动态代理方法执行结束......");
         return result;
     }
 
-    public static Object getInstance(Object target) {
+    /**
+     * 创建代理类实例
+     *
+     * @param target 目标类实例
+     * @return 代理类实例
+     */
+    public static Object newProxyInstance(Object target) {
         InvocationHandler handler = new MyProxyInvocationHandler(target);
         return Proxy.newProxyInstance(target.getClass().getClassLoader(), target.getClass().getInterfaces(), handler);
     }

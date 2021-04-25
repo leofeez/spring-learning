@@ -6,7 +6,7 @@ package com.leofee.proxy.jdk.target;
 public interface Hallo {
 
     /**
-     * 测试方法
+     * hello
      */
     void hello();
 }

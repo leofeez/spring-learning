@@ -3,9 +3,8 @@
 
 AOP(Aspect Oriented Programming): 面向切面编程，通过预编译方式和运行期动态代理实现程序功能的统一维护的一种技术。
 利用AOP可以让某些不影响实际业务逻辑的功能横向抽取成通用的一个切面，实现解耦。例如Spring 的事务处理 `@Transactional`，
-参数校验 `Hibernate validator`。而实现AOP的底层原理就是利用动态代理，在程序运行期间通过代理动态的将某些功能切入到指定指定位置。
-
-
+参数校验 `Hibernate validator`。而实现AOP的底层原理就是利用动态代理，在程序运行期间通过代理动态的将某些功能切入到指定指定位置，
+详情见[动态代理原理](./src/main/java/com/leofee/proxy/README.md)
 
 ### 重要概念
  1. `Aspect`(切面)：Aspect 声明类似于 Java 中的类声明，在 Aspect 中会包含着一些 Pointcut 以及相应的 Advice。

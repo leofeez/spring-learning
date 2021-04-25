@@ -7,6 +7,6 @@ public class HalloImpl implements Hallo {
 
     @Override
     public void hello() {
-        System.out.println("hello jdk proxy!");
+        System.out.println("hello world!");
     }
 }

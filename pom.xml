@@ -100,13 +100,20 @@
                 <version>3.4</version>
             </dependency>
 
+            <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-text</artifactId>
+                <version>1.8</version>
+            </dependency>
+
 
 
         </dependencies>
     </dependencyManagement>
 
     <build>
-        <finalName>spirngMVC</finalName>
+        <finalName>spring-learning</finalName>
         <plugins>
             <!-- 编码和编译和JDK版本 -->
             <plugin>

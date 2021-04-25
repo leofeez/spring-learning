@@ -6,6 +6,7 @@ import com.leofee.proxy.jdk.handler.MyProxyInvocationHandler;
 import com.leofee.proxy.jdk.handler.StaticProxyHandler;
 import com.leofee.proxy.jdk.target.HalloImpl;
 import org.junit.Test;
+import org.springframework.cglib.core.DebuggingClassWriter;
 import org.springframework.cglib.proxy.Enhancer;
 
 /**
@@ -25,6 +26,7 @@ public class ProxyTest {
 
     @Test
     public void testJdkDynamicProxy() {
+        System.getProperties().put("sun.misc.ProxyGenerator.saveGeneratedFiles", "true");
         // 目标类实例
         com.leofee.proxy.jdk.target.Hallo target = new HalloImpl();
         // 获取代理类对象
@@ -35,6 +37,9 @@ public class ProxyTest {
 
     @Test
     public void testCglibProxy() {
+        // 代理类class文件存入本地磁盘方便我们反编译查看源码
+        System.setProperty(DebuggingClassWriter.DEBUG_LOCATION_PROPERTY, "/Users/leofee/projects/leofee/spring-learning");
+
         Enhancer enhancer = new Enhancer();
         // 设置代理类的父类
         enhancer.setSuperclass(Hallo.class);

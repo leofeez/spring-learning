@@ -103,7 +103,7 @@ JDK的动态代理需要满足一定的规则：
 ```java
 public class MyProxyInvocationHandler implements InvocationHandler {
 		
-  	// 目标类的实例
+	// 目标类的实例
     private final Object target;
 
     public MyProxyInvocationHandler(Object target) {
@@ -169,9 +169,9 @@ public static Object newProxyInstance(ClassLoader loader,
                                           Class<?>[] interfaces,
                                           InvocationHandler h) throws IllegalArgumentException {
         Objects.requireNonNull(h);
-				// 克隆目标类的接口
+		// 克隆目标类的接口
         final Class<?>[] intfs = interfaces.clone();
-  			// 安全校验
+		// 安全校验
         final SecurityManager sm = System.getSecurityManager();
         if (sm != null) {
             checkProxyAccess(Reflection.getCallerClass(), loader, intfs);
@@ -192,7 +192,7 @@ public static Object newProxyInstance(ClassLoader loader,
             if (sm != null) {
                 checkNewProxyPermission(Reflection.getCallerClass(), cl);
             }
-						// 获取proxy class带有InvocationHandler的构造器
+			// 获取proxy class带有InvocationHandler的构造器
             final Constructor<?> cons = cl.getConstructor(constructorParams);
             final InvocationHandler ih = h;
           	// 设置构造方法的访问权限
@@ -215,7 +215,7 @@ public static Object newProxyInstance(ClassLoader loader,
 1. 在生成代理类Class信息之前会去缓存中`WeakCache`中查找
 
 ```java
-		/**
+	/**
      * Generate a proxy class.  Must call the checkProxyAccess method
      * to perform permission checks before calling this.
      * 根据classloader和接口去缓存中拿对应的代理类Class
@@ -229,7 +229,7 @@ public static Object newProxyInstance(ClassLoader loader,
         }
 
       	// 根据classloader和接口去缓存中拿对应的代理类Class
-				// 如果缓存中没有则利用ProxyClassFactory生成代理类Class
+		// 如果缓存中没有则利用ProxyClassFactory生成代理类Class
         return proxyClassCache.get(loader, interfaces);
     }
 ```
@@ -242,7 +242,7 @@ public static Object newProxyInstance(ClassLoader loader,
 
    ```java
    public class WeakCache {
-     /**
+     	/**
     	 * @param key 为目标类的ClassLoader
     	 * @param parameter 为目标类的interfaces
     	 */
@@ -250,12 +250,12 @@ public static Object newProxyInstance(ClassLoader loader,
            Objects.requireNonNull(parameter);
    
            expungeStaleEntries();
-   				// 生成一级缓存的key
+		   // 生成一级缓存的key
            Object cacheKey = CacheKey.valueOf(key, refQueue);
-   				// 二级缓存为延迟加载的，当第一次获取并且为null 才去初始化对应一级下的二级缓存
+		   // 二级缓存为延迟加载的，当第一次获取并且为null 才去初始化对应一级下的二级缓存
            // lazily install the 2nd level valuesMap for the particular cacheKey
            ConcurrentMap<Object, Supplier<V>> valuesMap = map.get(cacheKey);
-     			// 二级缓存为null则开始new ConcurrentHashMap
+		   // 二级缓存为null则开始new ConcurrentHashMap
            if (valuesMap == null) {
                ConcurrentMap<Object, Supplier<V>> oldValuesMap
                    = map.putIfAbsent(cacheKey,
@@ -264,23 +264,23 @@ public static Object newProxyInstance(ClassLoader loader,
                    valuesMap = oldValuesMap;
                }
            }
-   				// subKeyFactory根据parameter即目标类的接口生成对应二级缓存key
+		   // subKeyFactory根据parameter即目标类的接口生成对应二级缓存key
            // create subKey and retrieve the possible Supplier<V> stored by that
            // subKey from valuesMap
            Object subKey = Objects.requireNonNull(subKeyFactory.apply(key, parameter));
-     			// 二级缓存的Value是一个Supplier
+		   // 二级缓存的Value是一个Supplier
            Supplier<V> supplier = valuesMap.get(subKey);
            Factory factory = null;
    				
-     			// 第一次生成代理类的时候二级缓存一定是空的
-     			// 注意这里的while(true)
+			// 第一次生成代理类的时候二级缓存一定是空的
+			// 注意这里的while(true)
            while (true) {
              	// 第一次循环时，supplier为null
              	// 第二次循环时，由于二级缓存的value在下方代码进行了实例化，所以这里会执行Factory#get()
                if (supplier != null) {
-                 	// 这一步在第一次还未生成Class的时候value是一个Factory实例
+					// 这一步在第一次还未生成Class的时候value是一个Factory实例
                  	// 当第一次生成代理类Class之后这里返回的就是最终的Class而不是工厂Factory
-                   // supplier might be a Factory or a CacheValue<V> instance
+                   	// supplier might be a Factory or a CacheValue<V> instance
                    V value = supplier.get();
                    if (value != null) {
                        return value;
@@ -295,14 +295,14 @@ public static Object newProxyInstance(ClassLoader loader,
                if (factory == null) {
                    factory = new Factory(key, parameter, subKey, valuesMap);
                }
-   						// 将生成的二级缓存value放进缓存中
+				// 将生成的二级缓存value放进缓存中
                if (supplier == null) {
                    supplier = valuesMap.putIfAbsent(subKey, factory);
                    if (supplier == null) {
                        // successfully installed Factory
                        supplier = factory;
                    }
-                   // else retry with winning supplier
+			   // else retry with winning supplier
                } else {
                    if (valuesMap.replace(subKey, supplier, factory)) {
                        // successfully replaced
@@ -323,13 +323,13 @@ public static Object newProxyInstance(ClassLoader loader,
 
    ```java
    private final class Factory implements Supplier<V> {
-   				// 目标类的class loader
+			// 目标类的class loader
            private final K key;
-     			// 目标类的interfaces
+			// 目标类的interfaces
            private final P parameter;
-     			// 二级缓存的key
+			// 二级缓存的key
            private final Object subKey;
-     			// 二级缓存的value map
+			// 二级缓存的value map
            private final ConcurrentMap<Object, Supplier<V>> valuesMap;
    
            Factory(K key, P parameter, Object subKey,
@@ -375,7 +375,7 @@ public static Object newProxyInstance(ClassLoader loader,
                // put into reverseMap
                reverseMap.put(cacheValue, Boolean.TRUE);
    
-   						// 这里开始将原来map中的factory实例替换为真正的value
+				// 这里开始将原来map中的factory实例替换为真正的value
                // try replacing us with CacheValue (this should always succeed)
                if (!valuesMap.replace(subKey, this, cacheValue)) {
                    throw new AssertionError("Should not reach here");
@@ -406,7 +406,7 @@ private static final class ProxyClassFactory
         implements BiFunction<ClassLoader, Class<?>[], Class<?>>
     {
         // prefix for all proxy class names
-  			// 代理类名称的前缀，类似于 $Proxy10,$Proxy20......
+		// 代理类名称的前缀，类似于 $Proxy10,$Proxy20......
         private static final String proxyClassNamePrefix = "$Proxy";
         // next number to use for generation of unique proxy class names
         private static final AtomicLong nextUniqueNumber = new AtomicLong();

@@ -27,10 +27,10 @@ Spring 之所以能够如此受欢迎还是离不开它自身的设计理念，I
 
 ## 学习目录
 
-- [spring 注解的使用](spring-learning-annotation/README.md)
+- [spring 注解的使用](spring-learning-annotation)
 
-- [spring 容器](spring-learning-ioc/README.md)
+- [spring 容器](spring-learning-ioc)
 
-- [spring AOP 原理](spring-learning-aop/README.md)
+- [spring AOP 原理](spring-learning-aop)
 
-- [spring 之 java SPI](spring-learning-spi/README.md)
+- [spring 之 java SPI](spring-learning-spi)

@@ -14,7 +14,8 @@ public class MyApplicationEvent extends ApplicationEvent {
      *
      * @param source the object on which the event initially occurred (never {@code null})
      */
-    public MyApplicationEvent(Object source) {
+    public MyApplicationEvent(String source) {
         super(source);
+        System.out.println(source);
     }
 }

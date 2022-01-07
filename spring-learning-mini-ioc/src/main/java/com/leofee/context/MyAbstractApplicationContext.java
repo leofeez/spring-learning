@@ -5,13 +5,14 @@ import com.leofee.factory.MyConfigurableBeanFactory;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 public abstract class MyAbstractApplicationContext implements MyApplicationContext {
 
     protected MyConfigurableBeanFactory beanFactory;
 
-    private Boolean isActive = false;
+    private final AtomicBoolean isActive = new AtomicBoolean(false);
 
     public MyAbstractApplicationContext() {
         this.beanFactory = new MyConfigurableBeanFactory();
@@ -30,7 +31,7 @@ public abstract class MyAbstractApplicationContext implements MyApplicationConte
     protected void prepareBeanFactory() {
         System.out.println("mini application context start up at: "
                 + DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss:SSS").format(LocalDateTime.now()));
-        isActive = true;
+        isActive.set(true);
     }
 
     protected void finishRefresh() {

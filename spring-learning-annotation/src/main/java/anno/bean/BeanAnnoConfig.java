@@ -1,6 +1,7 @@
 package anno.bean;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import pojo.Person;
 
@@ -26,6 +27,14 @@ public class BeanAnnoConfig {
         Person person = new Person();
         person.setAge(28);
         person.setName("Jack");
+
+        System.out.println("@Bean 注解执行 " + person.getName());
         return person;
+    }
+
+
+    @Bean
+    public Person hello() {
+        return person();
     }
 }

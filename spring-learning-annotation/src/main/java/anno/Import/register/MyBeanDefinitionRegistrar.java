@@ -1,5 +1,7 @@
 package anno.Import.register;
 
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import pojo.Mouse;
 import pojo.Tiger;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -22,6 +24,8 @@ public class MyBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar 
         // 场景：只有当前提 bean 已经在容器中，这里才去实例化当前bean
         boolean exists = registry.containsBeanDefinition(Tiger.class.getName());
         if (exists) {
+
+            AbstractBeanDefinition rootBeanDefinition = BeanDefinitionBuilder.rootBeanDefinition(Mouse.class).getBeanDefinition();
             // 这里注册bean，需要给bean进行一次封装
             RootBeanDefinition beanDefinition = new RootBeanDefinition(Mouse.class);
             // 注册我们需要的Bean(组件)

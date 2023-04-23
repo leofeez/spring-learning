@@ -1,5 +1,27 @@
 # Spring Bean 生命周期
 
+Spring框架是Spring生态中的基石，后续的Spring-boot Spring Cloud 等框架都是由于Spring提供了各种扩展点。
+
+Spring中主要的核心接口如下：
+
+- BeanFactory：Spring 容器的顶层接口，定义了获取Bean的规范。
+- ApplicationContext：Spring容器上下文，主要体现了Spring容器的中Bean的生命周期。
+- Environment: 在容器启动前读取一些环境变量信息。
+- BeanDefinition: 封装Bean的信息，如beanClass，Scope，LazyInit，factoryBeanName等。
+
+- BeanDefinitionReader: 负责从配置文件解析BeanDefinition。
+- BeanDefinitionRegistry: 负责向Spring容器注册BeanDefinition。
+- BeanFactoryPostProcessor：实现对BeanDefinition的后置处理（增强），典型的PlaceholderConfigurerSupport用于解析bean定义配置文件中的占位符。
+- FactoryBean: 就是单个对象的工厂类，和普通的Bean不一样，该工厂类所持有的对象引用应该是`getObject()`方法实际创建并返回的Bean而不是它本身，主要是提供给用户自定义实例化Bean的扩展点。
+- BeanPostProcessor: Bean实例的后置处理，如实现AOP增强
+- Aware: 类似于一个标记接口，如果一个Bean实现了XXXAware接口，Spring容器实例化Bean之后会采用callback的方式进行回调，通常作用是获取Spring容器的一些内置对象（Environment,ApplicationContext,BeaFactory），比如实现了ApplicationContextAware，Bean实例化之后就会通过setApplicationContext传入容器对象
+
+Spring中Bean的生命周期从宏观上看其实主要分为四步：
+
+**Bean定义信息的解析 —>Bean定义信息的注册—>Bean 的实例化 —>Bean的初始化**
+
+![image-20230424002723237](SpringContainer.png)
+
 ## 1. `FactoryBean`
 - FactoryBean，就是单个对象的工厂类，和普通的Bean不一样，该工厂类所持有的对象引用应该是`getObject()`方法实际创建并返回的Bean而不是它本身。
 尽管Spring容器在启动时会以普通Bean创建的方式一样去创建FactoryBean。

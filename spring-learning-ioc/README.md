@@ -2,7 +2,7 @@
 
 Spring框架是Spring生态中的基石，后续的Spring-boot Spring Cloud 等框架都是由于Spring提供了各种扩展点。
 
-Spring中主要的核心接口如下：
+## Spring中主要的核心接口如下：
 
 - BeanFactory：Spring 容器的顶层接口，定义了获取Bean的规范。
 - ApplicationContext：Spring容器上下文，主要体现了Spring容器的中Bean的生命周期。
@@ -16,13 +16,33 @@ Spring中主要的核心接口如下：
 - BeanPostProcessor: Bean实例的后置处理，如实现AOP增强
 - Aware: 类似于一个标记接口，如果一个Bean实现了XXXAware接口，Spring容器实例化Bean之后会采用callback的方式进行回调，通常作用是获取Spring容器的一些内置对象（Environment,ApplicationContext,BeaFactory），比如实现了ApplicationContextAware，Bean实例化之后就会通过setApplicationContext传入容器对象
 
+## Spring中Bean的生命周期
+
 Spring中Bean的生命周期从宏观上看其实主要分为四步：
 
 **Bean定义信息的解析 —>Bean定义信息的注册—>Bean 的实例化 —>Bean的初始化**
 
 ![image-20230424002723237](SpringContainer.png)
 
+### Spring容器启动AbstractApplicationContext#refresh()流程：
+
+- prepareRefresh(): 容器刷新的准备工作，设置Spring 容器的开启状态标志，实例化StandardEnvironment对象，初始化 早期的ApplicationListener(这是一个扩展点，比如Spring boot 会在这个点注册一些监听器)
+- obtainFreshBeanFactory: 实例化DefaultListableBeanFactory，ResourceLoader读取xml配置文件，并通过BeanDefinitionReader解析成BeanDefinition装在到Spring容器。
+- prepareBeanFactory: 对BeanFactory做一些初始化工作，如设置ClassLoader,添加预制的BeanPostProcessor，注册Environment对象到Spring容器。
+- postProcessBeanFactory: 钩子函数，交由子类扩展实现，比如在SpringMVC中对BeanFactory做一些前置处理。
+- invokeBeanFactoryPostProcessors: 实例化并按顺序（PriorityOrdered优先，其次是Ordered，最后是没有实现排序接口的）执行BeanFactoryPostProcessor，对初步解析的BeanDefinition做一些增强，比如解析占位符。
+- registerBeanPostProcessors: 实例化并注册Bean初始化过程中的所需要的BeanPostProcessor。
+- initMessageSource: 准备国际化的资源
+- initApplicationEventMulticaster: 初始化事件的广播器
+- onRefresh: 钩子函数，扩展点
+- registerListeners: 注册监听器
+- finishBeanFactoryInitlization: 实例化所有的单例对象（Bean实例化，初始化核心流程）
+- finishRefresh：容器刷新完毕做一些收尾工作，比如发布容器刷新完毕事件ContextRefreshedEvent
+
+
+
 ## 1. `FactoryBean`
+
 - FactoryBean，就是单个对象的工厂类，和普通的Bean不一样，该工厂类所持有的对象引用应该是`getObject()`方法实际创建并返回的Bean而不是它本身。
 尽管Spring容器在启动时会以普通Bean创建的方式一样去创建FactoryBean。
 

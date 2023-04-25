@@ -1,6 +1,6 @@
-# Spring Bean 生命周期
+# Spring 容器 IOC
 
-Spring框架是Spring生态中的基石，后续的Spring-boot Spring Cloud 等框架都是由于Spring提供了各种扩展点。
+Spring框架是Spring生态中的基石，后续的Spring-boot Spring Cloud 等框架都是基于Spring中的提供的各种扩展点扩展而来，所以了解Spring框架显得尤为重要，通过Spring源码，我们可以深刻体会到什么叫开闭原则，什么叫扩展性。
 
 ## Spring中主要的核心接口如下：
 
@@ -24,7 +24,9 @@ Spring中Bean的生命周期从宏观上看其实主要分为四步：
 
 ![image-20230424002723237](SpringContainer.png)
 
-### Spring容器启动AbstractApplicationContext#refresh()流程：
+### Spring容器启动
+
+AbstractApplicationContext#refresh()流程：
 
 - prepareRefresh(): 容器刷新的准备工作，设置Spring 容器的开启状态标志，实例化StandardEnvironment对象，初始化 早期的ApplicationListener(这是一个扩展点，比如Spring boot 会在这个点注册一些监听器)
 - obtainFreshBeanFactory: 实例化DefaultListableBeanFactory，ResourceLoader读取xml配置文件，并通过BeanDefinitionReader解析成BeanDefinition装在到Spring容器。
@@ -40,6 +42,74 @@ Spring中Bean的生命周期从宏观上看其实主要分为四步：
 - finishRefresh：容器刷新完毕做一些收尾工作，比如发布容器刷新完毕事件ContextRefreshedEvent
 
 
+
+ApplicationContext是Spring容器的上下文，可以理解为要想启动Spring容器，就必须实例化出一个具体的ApplicationContext的实现类，通常有两种：
+
+- ClassPathXmlApplicationContext: 基于xml文件配置的
+- AnnotationConfigApplicationContext: 基于Java注解形式配置的
+
+## Spring容器加载并解析配置文件
+
+1. 读取系统环境变量并加载到PropertySource中，因为对于配置文件名上有占位符${}时，需要进行替换，在ClassPathXmlApplicationContext构造方法中，setConfigLocations中创建StandardEnvironment，然后加载系统变量信息：
+
+```java
+	public ClassPathXmlApplicationContext(
+			String[] configLocations, boolean refresh, @Nullable ApplicationContext parent)
+			throws BeansException {
+
+		super(parent);
+    	// 设置配置文件
+    	// AbstractRefreshableApplicationContext#setConfigLocations
+		setConfigLocations(configLocations);
+		if (refresh) {
+			refresh();
+		}
+	}
+
+```
+
+2. AbstractRefreshableApplicationContext#setConfigLocations
+
+   通过AbstractPropertyResolver创建出PropertyPlaceholderHelper，结合系统环境变量值对占位符进行解析得到最终的配置文件名
+
+```java
+	public void setConfigLocations(@Nullable String... locations) {
+		if (locations != null) {
+			Assert.noNullElements(locations, "Config locations must not be null");
+			this.configLocations = new String[locations.length];
+			for (int i = 0; i < locations.length; i++) {
+				this.configLocations[i] = 
+                    // 解析配置文件的路径
+                    resolvePath(locations[i]).trim();
+			}
+		}
+		else {
+			this.configLocations = null;
+		}
+	}
+
+	protected String resolvePath(String path) {
+    // 1. 创建StandardEvironment，并在父类AbstractEnvironment构造中回调customizePropertySources
+    // 读取System.getProperties()和System.getEnv()装载到Spring容器中的PropertySourceList中
+    // 2. 通过resolveRequiredPlaceholders解析配置文件名上的${}占位符
+		return getEnvironment().resolveRequiredPlaceholders(path);
+	}
+```
+
+3. 创建BeanFactory并解析xml得到BeanDefinition注册到BeanFactory中
+
+   在AbstractApplicationContext#obtainFreshBeanFactory中，首先实例化DefaultListableBeanFactory，接着实例化XmlBeanDefinitionReader并持有DefaultListableBeanFactory的引用，通过AbstractBeanDefinitionReader将文件读取并封装成Resource对象，利用SAX读取xml文件流并生成Document，通过解析Document中的每一个Node最终封装成BeanDefinition注册到BeanFactory。
+
+​		
+
+### AbstractApplicationContext#prepareRefresh
+
+扩展点：initPropertySources()，可以重写该方法添加自定义的PropertySource
+
+### obtainFreshBeanFactory
+
+1. 创建DefaultListableBeanFactory
+2. 
 
 ## 1. `FactoryBean`
 

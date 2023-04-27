@@ -100,6 +100,17 @@ ApplicationContext是Spring容器的上下文，可以理解为要想启动Sprin
 
    在AbstractApplicationContext#obtainFreshBeanFactory中，首先实例化DefaultListableBeanFactory，接着实例化XmlBeanDefinitionReader并持有DefaultListableBeanFactory的引用，通过AbstractBeanDefinitionReader将文件读取并封装成Resource对象，利用SAX读取xml文件流并生成Document，通过解析Document中的每一个Node最终封装成BeanDefinition注册到BeanFactory。
 
+
+
+### 自定义xml标签
+
+1. 自定义标签的xsd文件
+2. 自定义spring.schemas配置文件，用于将xml中的namespace和xsd做映射。
+3. 自定义spring.handlers配置文件，用于指定自定义标签的handler实现类
+4. 自定义NamespaceHandler，需继承NamespaceHandlerSupport
+5. 自定义标签解析器，需继承于AbstractSingleBeanDefinitionParser，并重写getBeanClass（用于指定BeanDefinition的class）和doParse(Element element, BeanDefinitionBuilder builder) 用于解析每个属性值
+6. 在自定义的NamepaceHandler的init方法中将标签属性和解析器BeanDefinitionParser一一映射
+
 ​		
 
 ### AbstractApplicationContext#prepareRefresh

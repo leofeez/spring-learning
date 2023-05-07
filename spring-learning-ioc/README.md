@@ -24,9 +24,9 @@ Spring中Bean的生命周期从宏观上看其实主要分为四步：
 
 ![image-20230424002723237](SpringContainer.png)
 
-### Spring容器启动
+## Spring容器启动
 
-AbstractApplicationContext#refresh()流程：
+Spring 容器启动整体流程都在AbstractApplicationContext#refresh()方法中，主要流程如下：
 
 - prepareRefresh(): 容器刷新的准备工作，设置Spring 容器的开启状态标志，实例化StandardEnvironment对象，初始化 早期的ApplicationListener(这是一个扩展点，比如Spring boot 会在这个点注册一些监听器)
 - obtainFreshBeanFactory: 实例化DefaultListableBeanFactory，ResourceLoader读取xml配置文件，并通过BeanDefinitionReader解析成BeanDefinition装在到Spring容器。
@@ -48,7 +48,7 @@ ApplicationContext是Spring容器的上下文，可以理解为要想启动Sprin
 - ClassPathXmlApplicationContext: 基于xml文件配置的
 - AnnotationConfigApplicationContext: 基于Java注解形式配置的
 
-## Spring容器加载并解析配置文件
+### 1. Spring容器加载并解析配置文件
 
 1. 读取系统环境变量并加载到PropertySource中，因为对于配置文件名上有占位符${}时，需要进行替换，在ClassPathXmlApplicationContext构造方法中，setConfigLocations中创建StandardEnvironment，然后加载系统变量信息：
 
@@ -100,9 +100,7 @@ ApplicationContext是Spring容器的上下文，可以理解为要想启动Sprin
 
    在AbstractApplicationContext#obtainFreshBeanFactory中，首先实例化DefaultListableBeanFactory，接着实例化XmlBeanDefinitionReader并持有DefaultListableBeanFactory的引用，通过AbstractBeanDefinitionReader将文件读取并封装成Resource对象，利用SAX读取xml文件流并生成Document，通过解析Document中的每一个Node最终封装成BeanDefinition注册到BeanFactory。
 
-
-
-### 自定义xml标签
+#### 扩展点：自定义xml标签
 
 1. 自定义标签的xsd文件
 2. 自定义spring.schemas配置文件，用于将xml中的namespace和xsd做映射。
@@ -111,16 +109,40 @@ ApplicationContext是Spring容器的上下文，可以理解为要想启动Sprin
 5. 自定义标签解析器，需继承于AbstractSingleBeanDefinitionParser，并重写getBeanClass（用于指定BeanDefinition的class）和doParse(Element element, BeanDefinitionBuilder builder) 用于解析每个属性值
 6. 在自定义的NamepaceHandler的init方法中将标签属性和解析器BeanDefinitionParser一一映射
 
-​		
+​	
 
-### AbstractApplicationContext#prepareRefresh
+### 2. 容器刷新前置准备
 
-扩展点：initPropertySources()，可以重写该方法添加自定义的PropertySource
+prepareRefresh()
 
-### obtainFreshBeanFactory
+#### 扩展点：initPropertySources()
+
+可以重写该方法添加自定义的PropertySource
+
+### 3. 创建BeanFactory实例
+
+obtainFreshBeanFactory
 
 1. 创建DefaultListableBeanFactory
-2. 
+
+### 4. 初始化BeanFactory
+
+AbstractApplicationContext#prepareRefresh
+
+1. 创建并设置SPEL表达式解析器，StandardBeanExpressionResolver
+2. 创建并设置默认的属性编辑器，ResourceEditorRegistrar
+3. 注册ApplicationContextAwareProcessor，该PostProcessor作用为initializeBean时，进行ApplicationContextAware的设置。
+4. 配置依赖注入忽略的接口ignoreDependencyInterface，如ApplicationContextAware
+
+
+
+#### 扩展点：自定义属性编辑器，PropertyEditor
+
+a. 定义属性编辑器继承PropertyEditorSupport并重写setAsText(String text)，增加自定义属性设置逻辑。
+
+b. 定义编辑器的注册器，实现PropertyEditorRegistrar接口，并实现registerCustomEditors(PropertyEditorRegistry registry)，在该方法中通过registry将属性类型和属性编辑器实例进行绑定。
+
+c. 在xml配置文件中，将自定义的PropertyEditorRegistrar注册到CustomEditorConfigurer中
 
 ## 1. `FactoryBean`
 

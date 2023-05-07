@@ -7,8 +7,19 @@
                            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
                            http://www.leofee.com/schema/hello http://www.leofee.com/schema/hello.xsd
 ">
-    <bean id="person" class="pojo.Parent"/>
+    <bean id="parent" class="pojo.Parent">
+        <property name="son" value="leofee"/>
+    </bean>
 
-    <hello:world id="leofee" username="hello leofee"/>
+    <bean id="customEditorConfigurer" class="org.springframework.beans.factory.config.CustomEditorConfigurer">
+        <property name="propertyEditorRegistrars">
+            <list>
+                <bean class="editor.MySonPropertyEditorRegistrar"/>
+            </list>
+        </property>
+    </bean>
+
+
+    <hello:world id="leofee" username="hello leofee" />
 
 </beans>

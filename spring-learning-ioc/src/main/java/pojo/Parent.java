@@ -11,6 +11,7 @@ public class Parent implements Serializable {
 
     private String name;
 
+    private Son son;
 
     public Parent() {}
 
@@ -35,11 +36,20 @@ public class Parent implements Serializable {
         this.name = name;
     }
 
+    public Son getSon() {
+        return son;
+    }
+
+    public void setSon(Son son) {
+        this.son = son;
+    }
+
     @Override
     public String toString() {
         return "Parent{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
+                ", son=" + son +
                 '}';
     }
 }

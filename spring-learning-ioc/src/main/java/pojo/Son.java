@@ -7,7 +7,24 @@ import java.io.Serializable;
  */
 public class Son implements Serializable {
 
+    private String name;
+
     public Son() {
         System.out.println("Son init....");
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "Son{" +
+                "name='" + name + '\'' +
+                '}';
     }
 }

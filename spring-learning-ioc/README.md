@@ -134,15 +134,65 @@ AbstractApplicationContext#prepareRefresh
 3. 注册ApplicationContextAwareProcessor，该PostProcessor作用为initializeBean时，进行ApplicationContextAware的设置。
 4. 配置依赖注入忽略的接口ignoreDependencyInterface，如ApplicationContextAware
 
-
-
 #### 扩展点：自定义属性编辑器，PropertyEditor
 
-a. 定义属性编辑器继承PropertyEditorSupport并重写setAsText(String text)，增加自定义属性设置逻辑。
+​	a. 定义属性编辑器继承PropertyEditorSupport并重写setAsText(String text)，增加自定义属性设置逻辑。
 
-b. 定义编辑器的注册器，实现PropertyEditorRegistrar接口，并实现registerCustomEditors(PropertyEditorRegistry registry)，在该方法中通过registry将属性类型和属性编辑器实例进行绑定。
+​	b. 定义编辑器的注册器，实现PropertyEditorRegistrar接口，并实现registerCustomEditors(PropertyEditorRegistry registry)，在该方法中通过registry将属性类型和属性编辑器实例进行绑定。
 
-c. 在xml配置文件中，将自定义的PropertyEditorRegistrar注册到CustomEditorConfigurer中
+​	c. 在xml配置文件中，将自定义的PropertyEditorRegistrar注册到CustomEditorConfigurer中
+
+​	d. CustomEditorConfigurer实现了BeanFactoryPostProcessor接口，在invokeBeanFactoryPostprocessors中会执行postProcessBeanFactory，将自定义的EditorRegistrar添加到BeanFactory中
+
+​	e. 在Bean实例化时并封装到BeanWrapper时，通过自定义EditorRegistrar注册属性编辑器PropertyEditor
+
+​	f. 最终在Bean属性填充阶段会调用PropertyEditor的setAsText(String text)
+
+
+
+### 5. BeanFactory后置处理postProcessBeanFactory
+
+在BeanFactory初始化完成之后做一些后置处理，该方法为模板方法，默认是空实现，可交友子类进行重写扩展。
+
+典型的实现，可以通过该方法中的beanFactory注册额外的BeanPostProcessor
+
+```java
+public class MyApplicationContext extends AnnotationConfigApplicationContext {
+
+    public MyApplicationContext(Class<?>... annotatedClasses) {
+        super(annotatedClasses);
+    }
+
+    @Override
+    protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+        System.out.println("手工注册BeanPostProcessor前的数量：" + beanFactory.getBeanPostProcessorCount());
+
+        // 手工注册 BeanPostProcessor
+        beanFactory.addBeanPostProcessor(new MyBeanPostProcessor());
+
+        System.out.println("手工注册BeanPostProcessor前的数量：" + beanFactory.getBeanPostProcessorCount());
+    }
+}
+```
+
+
+
+### 6. 执行BeanFactoryPostProcessor
+
+```
+invokeBeanFactoryPostProcessors(beanFactory);
+```
+
+这一步是执行BeanFactory的后置处理器，主要分为两类：
+
+- BeanDefinitionRegistryPostProcessor
+- BeanFactoryPostProcessor 
+
+BeanDefinitionRegistryPostProcessor是BeanFactoryPostProcessor 的子接口，BeanDefinitionRegistryPostProcessor主要作用是注册额外的BeanDefinition，而BeanFactoryPostProcessor 就是对已经注册的BeanDefinition做进一步的解析，比如常用的配置注解（@ComponentScan，@Import）就是通过ConfigurationClassPostProcessor进行解析，并注册更多的BeanDefinition到BeanFactory中。
+
+两种后置处理器执行顺序不同：BeanDefinitionRegistryPostProcessor优先于BeanFactoryPostProcessor执行，并且分别还通过PriorityOrdered和Ordered进行优先级排序。
+
+
 
 ## 1. `FactoryBean`
 

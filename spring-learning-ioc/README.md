@@ -232,13 +232,15 @@ public class InitializingBeanConfig {
 ```
 
 ## 3. `ApplicationContextAware`
+
 `ApplicationContextAware` 是Spring容器提供用于初始化Bean的一个入口，通常情况下我们所有的Bean的生命周期都是交给Spring容器去管理，
 如实例化，初始化，销毁等。
 
 根据官方文档介绍：
+
 - 实现该接口之后，在容器启动时，BeanFactory 就是自动通知我们实现类去完成一系列操作。
 - 实现该接口之后，我们可以在容器启动时，能够很便利的通过当前的`ApplicationContext`去获取到我们需要的Bean，Spring建议，如果是为了
-设置类似于依赖Bean的话，Spring是不推荐实现该接口的，应该交给Spring去帮助我们加载依赖的Bean，如通过`@Autowired`的方式。
+  设置类似于依赖Bean的话，Spring是不推荐实现该接口的，应该交给Spring去帮助我们加载依赖的Bean，如通过`@Autowired`的方式。
 - Spring 还给我们提供了一个该接口的抽象实现类，其实我们可以直接继承该抽象实现类`ApplicationObjectSupport`，完成我们的想要的功能。
 
 例如自定义我们的`ApplicationContextAware`:
@@ -275,8 +277,9 @@ public class MyApplicationContextAware implements ApplicationContextAware {
 源码解析见：[(手把手玩转Spring 之 ApplicationContextAware)](https://blog.csdn.net/Ecilipse/article/details/105437086)
 
 ## 4. `BeanPostProcessor`
+
 Spring Bean 创建的拦截器
 
 ## 5. `BeanFactoryPostProcessor`
-Spring Bean Factory 拦截器
 
+Spring Bean Factory 拦截器

@@ -13,13 +13,16 @@ import pojo.Son;
 public class PostProcessorConfig {
 
     /**
-     * 这种方式向Spring容器中添加BeanPostProcessor会导致当前的配置类过早的进行实例化，
-     * 进一步导致当前的配置类不能有效的被所有的BeanPostProcessor所拦截处理。
-     * 因为当前@Bean 方法是实例方法，必须先实例化PostProcessorConfig才能对实例方法进行调用处理
+     * 通过@Bean注解方式向Spring容器中添加BeanPostProcessor会导致当前的配置类过早的进行实例化，
+     * 在{@code AbstractApplicationContext#registerBeanPostProcessors}的时候，会去实例化BeanPostProcessor，
+     * 而 @Bean 方法是实例方法，必须先实例化PostProcessorConfig才能对实例方法进行调用处理，这个时候其他的BeanPostProcessor
+     * 并未全部实例化完成，最终导致当前的配置类PostProcessorConfig不能有效的被所有的BeanPostProcessor所拦截处理。
      *
-     *具体原因为：
-     * <p> 在解析@Bean注解的时候，Spring会给对应的需要注册到容器的中的BeanDefinition设置factoryMethod 和 factoryBeanName，
-     *  <pre>
+     * <p>
+     * 具体原因为：
+     * <p>
+     *     1. 在解析@Bean注解的时候，Spring会给对应的需要注册到容器的中的BeanDefinition设置factoryMethodName 和 factoryBeanName，
+     * <pre>
      * ConfigurationClassBeanDefinitionReader.loadBeanDefinitionsForBeanMethod
      *
      * if (metadata.isStatic()) {
@@ -35,7 +38,8 @@ public class PostProcessorConfig {
      * 	    beanDef.setUniqueFactoryMethodName(methodName);
      * }
      *  </pre>
-     * 然后在注册并实例化BeanPostProcessor时：
+     *
+     * 2. 然后在AbstractApplicationContext#registerBeanPostProcessors注册并实例化BeanPostProcessor时：
      * <pre>
      *     AbstractAutowireCapableBeanFactory#createBeanInstance
      *
@@ -44,7 +48,8 @@ public class PostProcessorConfig {
      * 			return instantiateUsingFactoryMethod(beanName, mbd, args);
      *     }
      * </pre>
-     * 利用factoryMethod实例化：
+     *
+     * 3. 利用factoryMethod实例化：
      * <pre>
      *     ConstructorResolver#instantiateUsingFactoryMethod
      * if (factoryBeanName != null) {
@@ -60,7 +65,7 @@ public class PostProcessorConfig {
      *            }
      * 			factoryClass = factoryBean.getClass();
      * 			isStatic = false;
-     * 		}
+     *        }
      * 		else {
      * 			// It's a static factory method on the bean class.
      * 			if (!mbd.hasBeanClass()) {
@@ -77,10 +82,10 @@ public class PostProcessorConfig {
      *
      * @see PostProcessorRegistrationDelegate.BeanPostProcessorChecker
      */
-//    @Bean
-//    BeanPostProcessor getEarlyBeanPostProcessor() {
-//        return new MyEarlyBeanPostProcessor();
-//    }
+    @Bean
+    BeanPostProcessor earlyBeanPostProcessor() {
+        return new MyEarlyBeanPostProcessor();
+    }
 
     /**
      * 用static方法可以避免上述情况的发生，因为static方法是属于当前类，不是属性当前类的实例
@@ -88,14 +93,14 @@ public class PostProcessorConfig {
      * @see ConstructorResolver#instantiateUsingFactoryMethod
      */
     @Bean
-    static BeanPostProcessor earlyBeanPostProcessor() {
-        return new MyEarlyBeanPostProcessor();
+    static BeanPostProcessor myBeanPostProcessor() {
+        return new MyBeanPostProcessor();
     }
 
-    @Bean
-    BeanDefinitionRegistryPostProcessor getEarlyBeanDefinitionRegistryPostProcessor() {
-        return new MyEarlyBeanDefinitionRegistryPostProcessor();
-    }
+    // @Bean
+    // BeanDefinitionRegistryPostProcessor earlyBeanDefinitionRegistryPostProcessor() {
+    //     return new MyEarlyBeanDefinitionRegistryPostProcessor();
+    // }
 
     @Bean
     Parent parent() {

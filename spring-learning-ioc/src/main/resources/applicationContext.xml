@@ -11,6 +11,8 @@
         <property name="son" value="leofee"/>
     </bean>
 
+    <context:annotation-config/>
+
     <bean id="customEditorConfigurer" class="org.springframework.beans.factory.config.CustomEditorConfigurer">
         <property name="propertyEditorRegistrars">
             <list>

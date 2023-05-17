@@ -1,5 +1,29 @@
 # Spring 容器 IOC
 
+IOC(Inversion of Control，控制反转): 在以往的项目中，Bean的创建都是由我们程序本身去实现这就是所谓的正转，而在Spring中，Bean的
+生命周期都是交由Spring容器管理，包括创建和销毁，这就表现出对Bean的控制权的反转，所以了解Spring中Bean的生命周期就额外重要。
+
+## Spring容器接口
+
+Spring容器接口分为两种：
+
+- ApplicationContext:ApplicationContext是Spring容器的上下文，可以理解为要想启动Spring容器，就必须实例化出一个具体的ApplicationContext的实现类，通常有两种：
+  - ClassPathXmlApplicationContext: 基于xml文件配置的
+  - AnnotationConfigApplicationContext: 基于Java注解形式配置的
+- BeanFactory:Spring中所有的Bean的工厂，即Spring创建的Bean都是存放在BeanFactory中，Bean的获取和创建都是由BeanFactory来实现。
+
+## Spring中Bean的生命周期
+
+Spring中Bean的生命周期从宏观上看其实主要分为四步：
+
+**Bean定义信息的解析 —>Bean定义信息的注册—>Bean 的实例化 —>Bean的初始化**
+
+![image-20230424002723237](SpringContainer.png)
+
+在整个Bean的生命周期中，整体的流程是ApplicationContext中主导，而具体的Bean的创建，是交由BeanFactory来主导，因为在ApplicationContext开始刷新时，会创建BeanFactory的具体实现类并将引用交由ApplicationContext持有，这样在ApplicaitonContext容器启动的过程中就可以将Bean的创建流程交由BeanFactory来主导，BeanFactory的最底层实现类为`DefaultListableBeanFactory`，它的类继承图如下：
+
+![](DefaultListableBeanFactory.png)
+
 ## Spring中核心接口
 
 以下几个核心接口在Spring容器启动以及Bean的生命周期中都扮演着重要的角色：
@@ -16,23 +40,14 @@
 - BeanPostProcessor: Bean实例的后置处理，如实现AOP增强
 - Aware: 类似于一个回调接口，如果一个Bean实现了XXXAware接口，Spring容器实例化Bean之后会进行回调，通常作用是获取Spring容器的一些内置对象（Environment,ApplicationContext,BeaFactory），比如实现了ApplicationContextAware，Bean实例化之后就会通过setApplicationContext传入容器对象
 - InitializingBean: Spring容器在启动创建Bean实例并且在Bean属性填充后的初始化回调。
--
 
-## Spring中Bean的生命周期
-
-Spring中Bean的生命周期从宏观上看其实主要分为四步：
-
-**Bean定义信息的解析 —>Bean定义信息的注册—>Bean 的实例化 —>Bean的初始化**
-
-![image-20230424002723237](SpringContainer.png)
-
-## Spring容器启动
+## Spring容器启动流程
 
 Spring 容器启动整体流程都在AbstractApplicationContext#refresh()方法中，主要流程如下：
 
 1.prepareRefresh(): 容器刷新的准备工作，设置Spring 容器的开启状态标志，实例化StandardEnvironment对象，初始化 早期的ApplicationListener(这是一个扩展点，比如Spring boot 会在这个点注册一些监听器)
 
-1. 2.obtainFreshBeanFactory: 实例化DefaultListableBeanFactory，ResourceLoader读取xml配置文件，并通过BeanDefinitionReader解析成BeanDefinition装在到Spring容器。
+2.obtainFreshBeanFactory: 实例化DefaultListableBeanFactory，ResourceLoader读取xml配置文件，并通过BeanDefinitionReader解析成BeanDefinition装在到Spring容器。
 
 3.prepareBeanFactory: 对BeanFactory做一些初始化工作，如设置ClassLoader,添加预制的BeanPostProcessor，注册Environment对象到Spring容器。
 
@@ -54,16 +69,12 @@ Spring 容器启动整体流程都在AbstractApplicationContext#refresh()方法�
 
 12.finishRefresh：容器刷新完毕做一些收尾工作，比如发布容器刷新完毕事件ContextRefreshedEvent
 
-ApplicationContext是Spring容器的上下文，可以理解为要想启动Spring容器，就必须实例化出一个具体的ApplicationContext的实现类，通常有两种：
-
-- ClassPathXmlApplicationContext: 基于xml文件配置的
-- AnnotationConfigApplicationContext: 基于Java注解形式配置的
-
 下面就根据源码来具体看下Spring容器的启动详细步骤：
 
 ### 1. Spring容器启动解析配置文件
+
 在使用基于xml方式配置Spring的时候，由于xml文件名或者配置内容支持占位符如`applicaitonContext-${env}.xml`，容器启动时需要解析占位符来定位到具体配置文件，
-   所以在容器启动时需要读取系统环境变量(包含vm options)封装到PropertySource添加到Environment中， 通过`PropertyResolver`根据加载完成的变量来解析配置文件上的占位符：
+所以在容器启动时需要读取系统环境变量(包含vm options)封装到PropertySource添加到Environment中， 通过`PropertyResolver`根据加载完成的变量来解析配置文件上的占位符：
 
 ```java
 public class ClassPathXmlApplicationContext {
@@ -100,12 +111,9 @@ public class ClassPathXmlApplicationContext {
         // 4. PropertySourcesPropertyResolver通过Environment中的变量来解析xml的配置文件名称（如果有${}占位符）
 		return getEnvironment().resolveRequiredPlaceholders(path);
 	}
-	
+
 }
 ```
-3. 创建BeanFactory并解析xml得到BeanDefinition注册到BeanFactory中
-
-   在AbstractApplicationContext#obtainFreshBeanFactory中，首先实例化DefaultListableBeanFactory，接着实例化XmlBeanDefinitionReader并持有DefaultListableBeanFactory的引用，通过AbstractBeanDefinitionReader将文件读取并封装成Resource对象，利用SAX读取xml文件流并生成Document，通过解析Document中的每一个Node最终封装成BeanDefinition注册到BeanFactory。
 
 #### 扩展点：自定义xml标签
 
@@ -116,19 +124,62 @@ public class ClassPathXmlApplicationContext {
 5. 自定义标签解析器，需继承于AbstractSingleBeanDefinitionParser，并重写getBeanClass（用于指定BeanDefinition的class）和doParse(Element element, BeanDefinitionBuilder builder) 用于解析每个属性值
 6. 在自定义的NamepaceHandler的init方法中将标签属性和解析器BeanDefinitionParser一一映射
 
-### 2. 容器刷新前置准备
+### 2. 容器刷新前置准备prepareRefresh()
 
-prepareRefresh()
+这一步主要是做一些容器启动前的准备工作：
 
-#### 扩展点：initPropertySources()
+1. 设置容器启动active标识为true，closed关闭标记为false
+2. 添加额外的PropertySource到容器的Environment中（扩展点），子类可以重写`initPropertySources()`添加自定义的PropertySource
+3. 通过Environment#validateRequiredProperties() 校验必须的变量值是否存在，必须的变量值通过Environment#setRequiredProperties(String... requiredProperties)来指定。
+4. 添加在容器启动刷新前的监听器Listener(比如SpringBoot中在容器启动前会执行Listener)
 
-可以重写该方法添加自定义的PropertySource
+#### 扩展点：initPropertySources()添加自定义的变量值
 
-### 3. 创建BeanFactory实例
+子类重写该方法添加自定义的PropertySource后，这样在容器启动过程中或者容器启动后就可以通过容器对象中的`Environment`获取对应的属性值：
 
-obtainFreshBeanFactory
+```java
 
-1. 创建DefaultListableBeanFactory
+/**
+ * @author leofee
+ */
+public class MyApplicationContext extends AnnotationConfigApplicationContext {
+
+    public MyApplicationContext(Class<?>... annotatedClasses) {
+        super(annotatedClasses);
+    }
+
+    /**
+     * 添加自定义的PropertySource
+     */
+    @Override
+    protected void initPropertySources() {
+        MutablePropertySources propertySources = getEnvironment().getPropertySources();
+        Properties properties = new Properties();
+        properties.setProperty("hello", "leofee's property!");
+        propertySources.addLast(new PropertiesPropertySource("my_properties", properties));
+    }
+
+    public static void main(String[] args) {
+        // 容器启动
+        MyApplicationContext context = new MyApplicationContext(ApplicationContextAwareConfig.class);
+
+        // 通过容器中的Environment就可以获取对应的value值
+        String value = context.getEnvironment().getProperty("hello");
+        System.out.println("initPropertySources 添加自定义属性 hello:" + value);
+    }
+}
+```
+
+### 3. 创建BeanFactory实例: obtainFreshBeanFactory
+
+这一步会调用`AbstractApplicationContext#refreshBeanFactory()`方法，创建`DefaultListableBeanFactory`实例，并将BeanFactory的引用设置到ApplicationContext#beanFactory中，这样后续的Bean的创建就可以交由BeanFactory来主导，而不是ApplicationContext。
+
+`refreshBeanFactory`为`AbstractApplicationContext`中的抽象方法，子类必须实现此方法才能执行实际的配置加载，针对基于XML方式配置和基于注解形式配置分别有不同的实现：
+
+- 如果是基于Java注解形式配置（容器对象为AnnotationConfigApplicationContext）的Spring容器，在`GenericApplicationContext`中，只设置了BeanFactory的序列化ID值。
+- 如果是基于Xml配置方式的Spring容器即实现为`AbstractRefreshableApplicationContext`，还会有额外的读取并解析对应的xml配置的过程。
+  1. 创建BeanFactory并解析xml得到BeanDefinition注册到BeanFactory中
+  2. XmlBeanDefinitionReader并持有DefaultListableBeanFactory的引用，通过AbstractBeanDefinitionReader将文件读取并封装成Resource对象，利用SAX读取xml文件流并生成Document，通过解析Document中的每一个Node最终封装成BeanDefinition注册到BeanFactory。
 
 ### 4. 初始化BeanFactory
 
@@ -141,24 +192,13 @@ AbstractApplicationContext#prepareRefresh
 
 #### 扩展点：自定义属性编辑器，PropertyEditor
 
-```
-a. 定义属性编辑器继承PropertyEditorSupport并重写setAsText(String text)，增加自定义属性设置逻辑。
-```
-```
-b. 定义编辑器的注册器，实现PropertyEditorRegistrar接口，并实现registerCustomEditors(PropertyEditorRegistry registry)，在该方法中通过registry将属性类型和属性编辑器实例进行绑定。
-```
-```
-c. 在xml配置文件中，将自定义的PropertyEditorRegistrar注册到CustomEditorConfigurer中
-```
-```
-d. CustomEditorConfigurer实现了BeanFactoryPostProcessor接口，在invokeBeanFactoryPostprocessors中会执行postProcessBeanFactory，将自定义的EditorRegistrar添加到BeanFactory中
-```
-```
-e. 在Bean实例化时并封装到BeanWrapper时，通过自定义EditorRegistrar注册属性编辑器PropertyEditor
-```
-```
-f. 最终在Bean属性填充阶段会调用PropertyEditor的setAsText(String text)
-```
+1. 定义属性编辑器继承PropertyEditorSupport并重写setAsText(String text)，增加自定义属性设置逻辑。
+2. 定义编辑器的注册器，实现PropertyEditorRegistrar接口，并实现registerCustomEditors(PropertyEditorRegistry registry)，在该方法中通过registry将属性类型和属性编辑器实例进行绑定。
+3. 在xml配置文件中，将自定义的PropertyEditorRegistrar注册到CustomEditorConfigurer中
+4. CustomEditorConfigurer实现了BeanFactoryPostProcessor接口，在invokeBeanFactoryPostprocessors中会执行postProcessBeanFactory，将自定义的EditorRegistrar添加到BeanFactory中
+5. 在Bean实例化时并封装到BeanWrapper时，通过自定义EditorRegistrar注册属性编辑器PropertyEditor
+6. 最终在Bean属性填充阶段会调用PropertyEditor的setAsText(String text)
+
 ### 5. BeanFactory后置处理postProcessBeanFactory
 
 在BeanFactory初始化完成之后做一些后置处理，该方法为模板方法，默认是空实现，可交友子类进行重写扩展。
@@ -183,11 +223,13 @@ public class MyApplicationContext extends AnnotationConfigApplicationContext {
     }
 }
 ```
+
 ### 6. 执行BeanFactoryPostProcessor
 
 ```
 invokeBeanFactoryPostProcessors(beanFactory);
 ```
+
 这一步是执行BeanFactory的后置处理器，主要分为两类：
 
 - BeanDefinitionRegistryPostProcessor
@@ -233,6 +275,7 @@ public class InitializingBeanConfig {
     }
 }
 ```
+
 ## 3. `ApplicationContextAware`
 
 `ApplicationContextAware` 是Spring容器提供用于初始化Bean的一个入口，通常情况下我们所有的Bean的生命周期都是交给Spring容器去管理，
@@ -273,6 +316,7 @@ public class MyApplicationContextAware implements ApplicationContextAware {
     }
 }
 ```
+
 在容器启动时就会执行`setApplicationContext`，然后执行`doSomethingMore`完成我们想扩展的功能。
 
 源码解析见：[(手把手玩转Spring 之 ApplicationContextAware)](https://blog.csdn.net/Ecilipse/article/details/105437086)

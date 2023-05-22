@@ -235,9 +235,45 @@ invokeBeanFactoryPostProcessors(beanFactory);
 - BeanDefinitionRegistryPostProcessor
 - BeanFactoryPostProcessor
 
-BeanDefinitionRegistryPostProcessor是BeanFactoryPostProcessor 的子接口，BeanDefinitionRegistryPostProcessor主要作用是注册额外的BeanDefinition，而BeanFactoryPostProcessor 就是对已经注册的BeanDefinition做进一步的解析，比如常用的配置注解（@ComponentScan，@Import）就是通过ConfigurationClassPostProcessor进行解析，并注册更多的BeanDefinition到BeanFactory中。
+BeanDefinitionRegistryPostProcessor是BeanFactoryPostProcessor 的子接口，BeanDefinitionRegistryPostProcessor主要作用是注册额外的BeanDefinition，如ConfigurationClassPostProcessor就是对已经注册的BeanDefinition做进一步的解析，比如常用的配置注解（@ComponentScan，@Import），通过解析注解，注册更多的BeanDefinition到BeanFactory中。
+
+BeanFactoryPostProcessor更多的是对已经加载完毕的BeanDefinition做一些额外的处理，比如对@Configuration的配置类进行增强（如：保证加了@Bean的方法的返回值对象永远是单例的）
 
 两种后置处理器执行顺序不同：BeanDefinitionRegistryPostProcessor优先于BeanFactoryPostProcessor执行，并且分别还通过PriorityOrdered和Ordered进行优先级排序。
+
+#### ConfigurationClassPostProcessor解析流程
+
+在Spring当中如果仅仅利用基于xml方式进行配置，则会很繁琐，所以为了简便，Spring还提供了基于注解的形式来配置，ConfigurationClassPostProcessor就是用于解析带有注解的配置类（如@Configuration），然后加载一些额外的BeanDefinition，流程如下：
+
+1. 确定具体需要解析的配置类，带有@Configuration为FULL类型的配置类，带有@Component,@ComponentScan@Import@ImportResource,或者带了@Bean注解的方法对应的类为LITE类型配置类。
+
+2. 创建ConfigurationClassParser，开始对确定好的配置类进行循环解析。
+
+   2.1 利用ConditionEvaluator判断是否跳过，如@Conditional注解来指定过滤规则
+
+   2.2 判断ConfigurationClass是否是Imort进来的，如果是，则进行合并
+
+3. 将配置类封装为SourceClass，开始递归进行解析配置类doProcessConfigurationClass
+
+   3.1 解析@Component注解，判断是否有内部类也使用了@Component注解，如果有，则将内部类封装为ConfigurationClass进行递归解析。
+
+   3.2 解析@PropertySource注解，加载对应的资源到Environment中的MutablePropertySources中。
+
+   3.3 解析@ComponentScan注解，创建并利用ComponentScanAnnotationParser进行解析@ComponentScan注解元信息，如解析basePackages属性，来扫描指定的包路径下符合条件的配置类（默认规则为加了@Component注解的类，该规则在构造方法中默认指定，也可通过@ComponentScan的includeFilters和excludeFilters来自定义规则）
+
+   3.4 解析@Import注解，如果Import进来的class也带有Import注解，则会递归进行收集Import进来的配置类，收集完Import进来的配置类后，会封装为SourceClass回到解析最初始的地方递归进行解析这些配置类。
+
+   3.5 解析@ImportResource注解，将引入的资源名称进行占位符解析成真实的location后，添加到ImportedResources集合中，待后续步骤进行加载。
+
+   3.6 解析@Bean注解，封装为BeanMethod添加到当前配置类中（这一步还未解析）。
+
+   3.7 如果当前配置类还存在父类，则继续递归去解析父类上的注解。
+
+4. 对基本的一些注解解析完成之后，接着对剩下的如@ImportResource进来的配置文件的中的Bean进行解析加载，对@Bean方法开始真正解析，对实现了ImportBeanDefinitionRegistrar的类，调用registerBeanDefinitions方法注册BeanDefinition（如AOP中的AnnotationAwareAspectJAutoProxyCreator就是在这一步注册进行来的）
+
+
+
+
 
 ## 1. `FactoryBean`
 

@@ -124,7 +124,7 @@ public class ClassPathXmlApplicationContext {
 5. 自定义标签解析器，需继承于AbstractSingleBeanDefinitionParser，并重写getBeanClass（用于指定BeanDefinition的class）和doParse(Element element, BeanDefinitionBuilder builder) 用于解析每个属性值
 6. 在自定义的NamepaceHandler的init方法中将标签属性和解析器BeanDefinitionParser一一映射
 
-### 2. 容器刷新前置准备prepareRefresh()
+### 2. prepareRefresh()，容器刷新前置准备
 
 这一步主要是做一些容器启动前的准备工作：
 
@@ -170,7 +170,7 @@ public class MyApplicationContext extends AnnotationConfigApplicationContext {
 }
 ```
 
-### 3. 创建BeanFactory实例: obtainFreshBeanFactory
+### 3. obtainFreshBeanFactory()，创建BeanFactory实例
 
 这一步会调用`AbstractApplicationContext#refreshBeanFactory()`方法，创建`DefaultListableBeanFactory`实例，并将BeanFactory的引用设置到ApplicationContext#beanFactory中，这样后续的Bean的创建就可以交由BeanFactory来主导，而不是ApplicationContext。
 
@@ -181,7 +181,7 @@ public class MyApplicationContext extends AnnotationConfigApplicationContext {
   1. 创建BeanFactory并解析xml得到BeanDefinition注册到BeanFactory中
   2. XmlBeanDefinitionReader并持有DefaultListableBeanFactory的引用，通过AbstractBeanDefinitionReader将文件读取并封装成Resource对象，利用SAX读取xml文件流并生成Document，通过解析Document中的每一个Node最终封装成BeanDefinition注册到BeanFactory。
 
-### 4. 初始化BeanFactory
+### 4. prepareBeanFactory(beanFactory)，初始化BeanFactory
 
 AbstractApplicationContext#prepareRefresh
 
@@ -199,9 +199,9 @@ AbstractApplicationContext#prepareRefresh
 5. 在Bean实例化时并封装到BeanWrapper时，通过自定义EditorRegistrar注册属性编辑器PropertyEditor
 6. 最终在Bean属性填充阶段会调用PropertyEditor的setAsText(String text)
 
-### 5. BeanFactory后置处理postProcessBeanFactory
+### 5. postProcessBeanFactory(beanFactory)，对BeanFactory后置处理
 
-在BeanFactory初始化完成之后做一些后置处理，该方法为模板方法，默认是空实现，可交友子类进行重写扩展。
+在BeanFactory初始化完成之后做一些后置处理，该方法为模板方法，默认是空实现，可交由子类进行重写扩展。
 
 典型的实现，可以通过该方法中的beanFactory注册额外的BeanPostProcessor
 
@@ -224,7 +224,7 @@ public class MyApplicationContext extends AnnotationConfigApplicationContext {
 }
 ```
 
-### 6. 执行BeanFactoryPostProcessor
+### 6. invokeBeanFactoryPostProcessors(beanFactory)，注册并执行BeanFactoryPostProcessor
 
 ```
 invokeBeanFactoryPostProcessors(beanFactory);
@@ -252,7 +252,7 @@ BeanFactoryPostProcessor更多的是对已经加载完毕的BeanDefinition做一
    2.1 利用ConditionEvaluator判断是否跳过，如@Conditional注解来指定过滤规则
 
    2.2 判断ConfigurationClass是否是Imort进来的，如果是，则进行合并
-
+   
 3. 将配置类封装为SourceClass，开始递归进行解析配置类doProcessConfigurationClass
 
    3.1 解析@Component注解，判断是否有内部类也使用了@Component注解，如果有，则将内部类封装为ConfigurationClass进行递归解析。
@@ -268,16 +268,101 @@ BeanFactoryPostProcessor更多的是对已经加载完毕的BeanDefinition做一
    3.6 解析@Bean注解，封装为BeanMethod添加到当前配置类中（这一步还未解析）。
 
    3.7 如果当前配置类还存在父类，则继续递归去解析父类上的注解。
-
+   
 4. 对基本的一些注解解析完成之后，接着对剩下的如@ImportResource进来的配置文件的中的Bean进行解析加载，对@Bean方法开始真正解析，对实现了ImportBeanDefinitionRegistrar的类，调用registerBeanDefinitions方法注册BeanDefinition（如AOP中的AnnotationAwareAspectJAutoProxyCreator就是在这一步注册进行来的）
 
+   
+
+   #### @Import注解解析
+
+   @Import注解主要的作用是用来引入一些额外的配置类，主要分为以下几种：
+
+   - @Configuration的配置类
+   - @Component的普通类
+   - 实现了ImportSelector的类
+   - 实现了ImportBeanDefinitionRegistrar的类
+
+   最后两种方式在Spring中运用比较广泛，比如@EnableXXX的各种注解，几乎都是配合@Import注解来引入对应的功能，像@EnableAspectJAutoProxy上就使用@Import，引入了AspectJAutoProxyRegistrar，在解析注解的过程中就会注册AnnotationAwareAspectJAutoProxyCreator，从而实现AOP的动态代理功能。
+
+   除此之外，在Spring-boot中自动装配的机制EnableAutoConfiguration，也是基于@Import扩展实现的，引入了AutoConfigurationImportSelector（实现了ImportSelector），在解析该注解的过程中，通过SpringFactoriesLoader从META-INF/spring.factories配置文件中读取并加载自动装配的配置类。
 
 
 
+### 7. registerBeanPostProcessors(beanFactory)，注册BeanPostProcessor
+
+```java
+// Register bean processors that intercept bean creation.
+registerBeanPostProcessors(beanFactory);
+```
+
+注册BeanPostProcessor，Bean实例的后置处理，主要作用是在Spring创建完成Bean的实例之后，但是在初始化前后进行回调处理，BeanPostProcessor接口中定义了两个default方法如下：
+
+```java
+public interface BeanPostProcessor {
+
+	// 在任何bean初始化回调(如InitializingBean的afterPropertiesSet或自定义初始化方法)之前，将此BeanPostProcessor应用于给定的新bean实例
+	@Nullable
+	default Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+		return bean;
+	}
+
+	// 在任何bean初始化回调(如InitializingBean的afterPropertiesSet或自定义初始化方法)之后，将此BeanPostProcessor应用于给定的新bean实例
+	@Nullable
+	default Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+		return bean;
+	}
+
+}
+```
+
+从方法签名可以很明显看出，一个是Before一个是After，由于BeanPostProcessor作用的时机是创建Bean实例，初始化前后，所以所有的BeanPostProssor就需要提前注册到容器中，然后统一的在Bean初始化的环节进行拦截处理。
+
+#### 自定义BeanPostProcessor
+
+
+
+### 8. initMessageSource()，初始化MessageSource
+
+初始化国际化资源
+
+### 9. 初始化事件广播器initApplicationEventMulticaster()
+
+Spring中的事件发布机制采用的是观察者模式，与传统的观察者模式不同的点在于，传统的被观察者与观察者是紧耦合的，而Spring对传统的观察者模式中的角色做了进一步的细化，使观察者与被观察者之间的耦合度降低，主要分为以下几种角色：
+
+- 事件广播器（通知观察者）：ApplicationEventMulticaster
+- 监听器（观察者）：ApplicationListener
+- 事件（通知）：ApplicationEvent
+- 事件源（被观察者）：发布事件的触发点
+
+Spring容器启动时，会默认初始化SimpleApplicationEventMulticaster广播器，并且在父类AbstractApplicationEventMulticaster.ListenerRetriever内部类中保存着当前容器中的所有监听器ApplicationListener，一旦通过容器ApplicationContext.publishEvent，则会根据当前事件类型去匹配监听器retrieveApplicationListeners，最终调用ApplicationListener#onApplicationEvent完成对监听器的触发。
+
+
+
+### 10. onRefresh()，容器刷新自定义扩展
+
+该方法为模板方法，提供给子类进行额外的扩展工作
+
+### 11. registerListeners()，注册监听器
+
+### 12. finishBeanFactoryInitialization(beanFactory)，实例化剩余的所有非懒加载的单例Bean
+
+该方法含义是BeanFactory相关的初始化工作结束，开始实例化所有非懒加载的单例Bean，调用DefaultListableBeanFactory#preInstantiateSingletons，调用链如下：
+
+1. 遍历在前置步骤中已经设置好的BeanDefinition。
+2. 判断BeanDefinition是否是单例并且非懒加载，如果是，则调用AbstractBeanFactory#getBean(String beanName) -> AbstractBeanFactory#doGetBean
+3. 在AbstractBeanFactory#doGetBean中，优先从DefaultSingletonBeanRegistry#getSingleton(String beanName)一级缓存中查找，如果能够查到，则直接返回，否则开始创建
+4. 标记当前beanName对应的实例正在创建中， 通过markBeanAsCreated(beanName)将beanName添加到AbstractBeanFactory#alreadyCreated的集合中
+5. 判断当前Bean是否存在父类，通过getMergedLocalBeanDefinition(beanName);将父类与子类的BeanDefinition进行合并。
+6. 判断当前Bean是否存在依赖dependsOn，如果有，则先创建dependsOn对应的Bean，回到步骤2。
+7. 创建当前Bean，DefaultSingletonBeanRegistry#getSingleton(beanName, objectFactory)，该方法内部还是会优先从一级缓存中查找，如果没有则调用第二个参数ObjectFactory.getObject()，ObjectFactory为函数式接口，这一步实际调用的是AbstractAutowireCapableBeanFactory#createBean(beanName, beanDefinition, args),
+8. 解析当前BeanDefinition对应的Class，resolveBeanClass(mbd, beanName);
+9. 判断当前BeanDefinition是否存在OverrideMethods，场景为：一个单例Bean引用了一个非单例Bean，为了保证每次获取单例Bean的同时，要求引用的非单例Bean都是最新的（不一样的），所以需要使用lookup-method，然后在后续实例化的时候会采用CGLIB动态代理来拦截对应的非单例Bean的获取方法。
 
 ## 1. `FactoryBean`
 
-- FactoryBean，就是单个对象的工厂类，和普通的Bean不一样，该工厂类所持有的对象引用应该是`getObject()`方法实际创建并返回的Bean而不是它本身。
+FactoryBean是Spring提供创建Bean的另外一个方式，通过实现该接口，可以创建自定的Bean（通常用于创建实例化过程比较复杂的对象），与Spring通过反射创建的Bean不同的是，由FactoryBean创建的Bean不会经历Spring中Bean的生命周期。
+
+- FactoryBean，可以理解为单个对象的工厂类，和普通的Bean不一样，该工厂类所持有的对象引用是`getObject()`方法实际创建并返回的Bean而不是它本身。
   尽管Spring容器在启动时会以普通Bean创建的方式一样去创建FactoryBean。
 - FactoryBean支持单例和多例，根据`isSingleton()`返回值来确定是否是单例，默认为true。
 - FactoryBean生成的Bean，支持懒加载或者在容器启动阶段就同步创建Bean，如果需要同步创建Bean则可以选择实现 `SmartFactoryBean`，

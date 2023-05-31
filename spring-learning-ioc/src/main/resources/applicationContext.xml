@@ -21,6 +21,7 @@
         </property>
     </bean>
 
+    <context:annotation-config/>
 
     <hello:world id="leofee" username="hello leofee" />
 

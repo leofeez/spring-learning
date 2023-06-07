@@ -358,6 +358,33 @@ Spring容器启动时，会默认初始化SimpleApplicationEventMulticaster广�
 8. 解析当前BeanDefinition对应的Class，resolveBeanClass(mbd, beanName);
 9. 判断当前BeanDefinition是否存在OverrideMethods，场景为：一个单例Bean引用了一个非单例Bean，为了保证每次获取单例Bean的同时，要求引用的非单例Bean都是最新的（不一样的），所以需要使用lookup-method，然后在后续实例化的时候会采用CGLIB动态代理来拦截对应的非单例Bean的获取方法。
 
+
+
+### Spring中Bean创建实例的方式
+
+- 由Spring使用反射机制创建，BeanUtil.instantiateClass,(如果对象的方法上有Lookup注解， 则会使用动态代理生成代理类)
+2. 通过实现FactoryBean自定义创建Bean，FactoryBean#getObject()
+3. 通过FactoryMethod自定义创建Bean，在xml中配置 factory-bean, factory-method，除此之外，基于注解配置，@Bean的方法也会被解析设置到BeanDefinition的factoryMethodName上
+4. 通过Supplier自定义创建Bean，需在BeanDefinition中设置instanceSupplier属性，可以通过BeanFactoryPostProcessor中获取BeanDefiniton进行设置
+5. 通过实现InstantiationAwareBeanPostProcessor来自定义创建Bean(通常采用动态代理)
+
+### Spring 中 Bean实例化过程
+
+Spring中默认创建Bean的方式为反射，而反射生成一个类的实例需要使用构造方法:
+
+```java
+Constructor ctor = Person.class.getContructors()[0];
+ctor.newInstance("args");
+```
+
+而且，一个类的构造方法也是可以重载，即会存在多个参数列表不同的构造方法，所以Spring在通过反射创建类的实例之前就需要确定使用具体的构造方法：
+
+- 第一次尝试利用SmartInstantiationAwareBeanPostProcessor来确定是否有匹配的构造方法（有且仅有一个参数的构造方法或者只有一个@Autowired的构造方法）
+- 第二次，如果是基于xml定义的bean对象，支持`<constructor name="age" value="18"/>`标签，在解析成BeanDefinition的时候resolvedConstructorArguments就不为空，这时候通过标签指定的构造参数来确定对应的构造方法用于Bean的实例化。
+- 第三次
+
+Bean对象构造方法确定好之后会缓存到对应的BeanDefinition中的resolvedConstructorOrFactoryMethod，好处是对于prototype类型的Bean，后续再次创建对应的实例时就无需再次解析，直接通过缓存获取对应构造方法使用即可，提高效率。
+
 ## 1. `FactoryBean`
 
 FactoryBean是Spring提供创建Bean的另外一个方式，通过实现该接口，可以创建自定的Bean（通常用于创建实例化过程比较复杂的对象），与Spring通过反射创建的Bean不同的是，由FactoryBean创建的Bean不会经历Spring中Bean的生命周期。

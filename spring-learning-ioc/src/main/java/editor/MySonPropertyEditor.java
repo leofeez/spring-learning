@@ -11,10 +11,10 @@ public class MySonPropertyEditor extends PropertyEditorSupport {
 
     @Override
     public void setAsText(String text) throws IllegalArgumentException {
+        System.out.println("Son property value is: " + text);
         Son son = new Son();
-
         son.setName(text);
-
         setValue(son);
+        System.out.println("Son property value resolved: " + text + " ——> " + son.toString());
     }
 }

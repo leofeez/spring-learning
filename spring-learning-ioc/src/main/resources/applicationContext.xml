@@ -25,4 +25,8 @@
 
     <hello:world id="leofee" username="hello leofee" />
 
+    <bean id="myFactoryMethodBean" class="lifecycle.factorymethod.MyFactoryMethodBean"/>
+
+    <bean id="sun" class="pojo.Son" factory-bean="myFactoryMethodBean" factory-method="getSon"/>
+
 </beans>

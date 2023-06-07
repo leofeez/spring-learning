@@ -10,7 +10,7 @@ public class Son implements Serializable {
     private String name;
 
     public Son() {
-        System.out.println("Son init....");
+        System.out.println("Son create....");
     }
 
     public String getName() {
